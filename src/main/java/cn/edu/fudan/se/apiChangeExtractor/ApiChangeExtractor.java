@@ -35,8 +35,9 @@ public class ApiChangeExtractor {
 				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
 				List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
+				newFile.delete();
+				oldFile.delete();
 			}
 		}
-//		List<SourceCodeChange> changeList = changeExactor.extractChangesInFile(preFile, nowFile);
 	}
 }
