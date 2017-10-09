@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExactor.util;
+package cn.edu.fudan.se.apiChangeExtractor.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExactor.changedistiller;
+package cn.edu.fudan.se.apiChangeExtractor.changedistiller;
 
 import java.io.File;
 import java.util.List;
@@ -8,7 +8,7 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 
-public class ChangeExactor {
+public class ChangeExtractor {
 	public List<SourceCodeChange> extractChangesInFile(File preFile, File nowFile){
 		FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
 		try {

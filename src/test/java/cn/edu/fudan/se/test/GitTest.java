@@ -1,15 +1,14 @@
 package cn.edu.fudan.se.test;
 
-import java.io.IOException;
-
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
-import cn.edu.fudan.se.apiChangeExactor.gitReader.GitReader;
+import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 
 public class GitTest {
-	String repositoryPath = "D:/javaee/parser/ApiChangeExactor";
-	GitReader reader = new GitReader(repositoryPath);
+	String repositoryPath1 = "D:/javaee/parser/ApiChangeExactor";
+	String repositoryPath2 = "D:/github/ChangeExtractor";
+	GitReader reader = new GitReader(repositoryPath1);
 	@Test
 	public void testGetLastCommit(){
 		RevCommit last = reader.getLastCommit();
@@ -25,15 +24,16 @@ public class GitTest {
 	@Test
 	public void testGetChangeFiles(){
 		RevCommit last = reader.getLastCommit();
-		try {
-			reader.getChangeFiles(last);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		reader.getChangeFiles(last);
 	}
 	
 	@Test
 	public void testGetFileContentByCommitId(){
 		reader.getFileContentByCommitId("159c4b82b941edf7a1612bf76fdce3f400ed753e", "src/main/java/cn/edu/fudan/se/ApiChangeExactor/Main.java");
+	}
+	
+	@Test
+	public void testGetCommits(){
+		reader.getCommits();
 	}
 }

@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExactor;
+package cn.edu.fudan.se.apiChangeExtractor;
 
 public class Main {
 	public static void main(String[] args){

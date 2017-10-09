@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExactor.gitReader;
+package cn.edu.fudan.se.apiChangeExtractor.gitReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
-import cn.edu.fudan.se.apiChangeExactor.bean.ChangeFile;
+import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 
 public class GitReader {
 	private Git git;
@@ -42,7 +42,22 @@ public class GitReader {
 		}
 	}
 	
-	public List<ChangeFile> getChangeFiles(RevCommit commit) throws IOException{
+	public List<RevCommit> getCommits(){
+		List<RevCommit> allCommits = null;
+		try {
+			Iterable<RevCommit> commits = git.log().call();
+			allCommits = new ArrayList<RevCommit>();
+			for(RevCommit commit : commits){
+				allCommits.add(commit);
+			}
+		} catch (NoHeadException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return allCommits;
+	}
+	public List<ChangeFile> getChangeFiles(RevCommit commit){
     	List<ChangeFile> changeFiles= new ArrayList<ChangeFile>();
 		
 		AbstractTreeIterator newTree = prepareTreeParser(commit);
@@ -165,7 +180,6 @@ public class GitReader {
 		try {
 			loader = repository.open(blobId);
 			byte[] bytes = loader.getBytes();
-			loader.copyTo(System.out);
 			return bytes;
 		} catch (MissingObjectException e) {
 			e.printStackTrace();

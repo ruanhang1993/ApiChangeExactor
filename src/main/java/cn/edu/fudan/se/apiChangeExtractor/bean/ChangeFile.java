@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExactor.bean;
+package cn.edu.fudan.se.apiChangeExtractor.bean;
 
 import org.eclipse.jgit.lib.ObjectId;
 
