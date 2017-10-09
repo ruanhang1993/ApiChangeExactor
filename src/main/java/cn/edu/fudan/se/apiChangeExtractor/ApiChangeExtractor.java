@@ -28,9 +28,10 @@ public class ApiChangeExtractor {
 		tempDir.mkdirs();
 		List<RevCommit> commits = gitReader.getCommits();
 		for(RevCommit commit : commits){
+			System.out.println("***************************************************************************");
 			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
 			for(ChangeFile changeFile : changeFiles){
-				if(DiffEntry.ChangeType.MODIFY.equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
+				if(DiffEntry.ChangeType.MODIFY.toString().equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
 					System.out.println("===============================================");
 					System.out.println(changeFile.getNewPath());
 					byte[] newContent = gitReader.getFileByObjectId(changeFile.getNewBlobId());
