@@ -26,6 +26,7 @@ public class ApiChangeExtractor {
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
+		System.out.println(tempDirPath);
 		List<RevCommit> commits = gitReader.getCommits();
 		for(RevCommit commit : commits){
 			System.out.println("***************************************************************************");
@@ -48,5 +49,6 @@ public class ApiChangeExtractor {
 				}
 			}
 		}
+		tempDir.delete();
 	}
 }
