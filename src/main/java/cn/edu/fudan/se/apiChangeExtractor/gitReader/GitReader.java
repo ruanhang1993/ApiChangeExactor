@@ -61,6 +61,7 @@ public class GitReader {
     	List<ChangeFile> changeFiles= new ArrayList<ChangeFile>();
 		
 		AbstractTreeIterator newTree = prepareTreeParser(commit);
+		if(commit.getParentCount()==0) return changeFiles;
     	AbstractTreeIterator oldTree = prepareTreeParser(commit.getParents()[0]);
     	List<DiffEntry> diff= null;
 		try {

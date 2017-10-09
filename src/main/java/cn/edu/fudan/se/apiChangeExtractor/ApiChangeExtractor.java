@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
@@ -29,14 +30,21 @@ public class ApiChangeExtractor {
 		for(RevCommit commit : commits){
 			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
 			for(ChangeFile changeFile : changeFiles){
-				byte[] newContent = gitReader.getFileByObjectId(changeFile.getNewBlobId());
-				byte[] oldContent = gitReader.getFileByObjectId(changeFile.getOldBlobId());
-				String randomString = UUID.randomUUID().toString();
-				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
-				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
-				List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
-				newFile.delete();
-				oldFile.delete();
+				if(DiffEntry.ChangeType.MODIFY.equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
+					System.out.println("===============================================");
+					System.out.println(changeFile.getNewPath());
+					byte[] newContent = gitReader.getFileByObjectId(changeFile.getNewBlobId());
+					byte[] oldContent = gitReader.getFileByObjectId(changeFile.getOldBlobId());
+					String randomString = UUID.randomUUID().toString();
+					File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
+					File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+					List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
+					for(SourceCodeChange change:changes){
+						System.out.println(change.toString());
+					}
+					newFile.delete();
+					oldFile.delete();
+				}
 			}
 		}
 	}
