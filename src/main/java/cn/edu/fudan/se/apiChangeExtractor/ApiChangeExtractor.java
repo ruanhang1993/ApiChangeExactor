@@ -1,6 +1,24 @@
 package cn.edu.fudan.se.apiChangeExtractor;
 
+import japa.parser.JavaParser;
+import japa.parser.ParseException;
+import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.Node;
+import japa.parser.ast.body.BodyDeclaration;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.FieldDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
+import japa.parser.ast.body.TypeDeclaration;
+import japa.parser.ast.expr.VariableDeclarationExpr;
+import japa.parser.ast.stmt.ExpressionStmt;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +44,6 @@ public class ApiChangeExtractor {
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
-		System.out.println(tempDirPath);
 		List<RevCommit> commits = gitReader.getCommits();
 		for(RevCommit commit : commits){
 			System.out.println("***************************************************************************");
@@ -42,13 +59,203 @@ public class ApiChangeExtractor {
 					File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
 					List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
 					for(SourceCodeChange change:changes){
-						System.out.println(change.toString());
+						System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
 					}
-					newFile.delete();
-					oldFile.delete();
+					constructData(changes,newFile);
+					while(true){}
+//					newFile.delete();
+//					oldFile.delete();
 				}
 			}
 		}
 		tempDir.delete();
+	}
+	public void constructData(List<SourceCodeChange> changes, File file){
+        JapaAst japaAst = new JapaAst(true);
+        List<String> tempList = new ArrayList<>();
+        CompilationUnit cu = null;
+		try {
+			cu = JavaParser.parse(file);
+	        tempList = japaAst.parse(cu);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        //如果Import的包中带有*号，那么得到含有*号的这个import
+        List importList = cu.getImports();
+        List<String> starImportStringList = new ArrayList<>();
+        if (importList != null) {
+            for (int i = 0; i < importList.size(); i++) {
+                if (importList.get(i).toString().contains("*")) {
+                    String str = importList.get(i).toString();
+                    int index = str.indexOf("import");
+                    str = str.substring(index);
+                    String[] strs = str.split(" ");
+                    str = strs[strs.length - 1];//得到Import的包的信息
+                    str = str.replace(" ", ""); //替换掉空格" "
+                    str = str.replace(";", ""); //去除;
+                    starImportStringList.add(str);
+                }
+
+            }
+        }
+        //开始分析程序
+        if (cu.getTypes() != null) {
+            for (TypeDeclaration type : cu.getTypes()) {
+                if (type instanceof ClassOrInterfaceDeclaration) {
+                    //处理field
+                    List<VariableDeclarationExpr> fieldExpressionList = new ArrayList<>();
+                    for (BodyDeclaration body : type.getMembers()) {
+                        if (body instanceof FieldDeclaration) {
+                            FieldDeclaration field = (FieldDeclaration) body;
+                            for (int i = 0; i < field.getVariables().size(); i++) {
+                                VariableDeclarationExpr expr = new VariableDeclarationExpr();
+                                List list = new ArrayList();
+                                list.add(field.getVariables().get(i));
+                                expr.setType(field.getType());
+                                expr.setVars(list);
+                                fieldExpressionList.add(expr);
+                            }
+                        }
+                    }
+                    //处理method
+                    for (BodyDeclaration body : type.getMembers()) {
+                        if (body instanceof MethodDeclaration) {
+                            if ((body.getEndLine() - body.getBeginLine() <= 826)) {
+                                List<String> completeClassNameList = new ArrayList<>();
+                                for (String str : tempList) {
+                                    completeClassNameList.add(str);
+                                }
+                                List userClassList = new ArrayList();
+                                for (String str : japaAst.getFilternames()) {
+                                    userClassList.add(str);
+                                }
+                                UserClassProcessing userClassProcessing = new UserClassProcessing();
+                                userClassProcessing.setUserClassList(userClassList);
+                                userClassList.add("userDefinedClass");
+                                MethodDeclaration method = (MethodDeclaration) body;
+                                List<String> parameterNameList = new ArrayList<>();
+                                List<String> typeMapList = new ArrayList<>();
+                                List<String> completeTypeMapList = new ArrayList<>();
+                                List<ExpressionStmt> parameterExpressionList = new ArrayList<>();
+                                if (method.getParameters() != null) {
+                                    List<Parameter> parameterList = method.getParameters();
+                                    for (int i = 0; i < parameterList.size(); i++) {
+                                        String contentString = "public class Test{public void test(){$}}";
+                                        String parameterString = parameterList.get(i).toString() + ";";
+                                        contentString = contentString.replaceAll("\\$", parameterString);
+                                        InputStream in = new ByteArrayInputStream(contentString.getBytes());
+                                        try {
+                                            CompilationUnit compilationUnit = JavaParser.parse(in);
+                                            Node node = compilationUnit.getTypes().get(0).getMembers().get(0);
+                                            ExpressionStmt expression = (ExpressionStmt) node.getChildrenNodes().get(1).getChildrenNodes().get(0);
+                                            parameterExpressionList.add(expression);
+                                        } catch (Exception e) {
+                                            continue;
+                                        } catch (Error e) {
+                                            continue;
+                                        }
+                                        // String[] strings = parameterList.get(i).toString().split(" ");
+                                        // parameterNameList.add(strings[strings.length - 1]);
+                                        // typeMapList.add(strings[strings.length - 1] + " " + parameterList.get(i).getType().toString());
+                                        //completeTypeMapList.add(parameterList.get(i).getType().toString());
+                                    }
+                                }
+                    /*添加类中的成员变量*/
+                                SimplifiedTreeCreator creator = new SimplifiedTreeCreator("");
+                                creator.setUserClassProcessing(userClassProcessing);
+                                creator.setStarImportStringList(starImportStringList);
+                                List<String> tempUserClassList = new ArrayList<>();
+                                for (int i = 0; i < completeClassNameList.size(); i++) {
+                                    try {
+                                        Class clazz = Thread.currentThread().getContextClassLoader().loadClass(completeClassNameList.get(i));
+                                        creator.getClass_name_map().put(clazz.getSimpleName(), completeClassNameList.get(i));
+                                    } catch (Exception e) {
+                                        tempUserClassList.add(completeClassNameList.get(i));
+                                        userClassList.add(completeClassNameList.get(i));
+                                    } catch (Error e) {
+                                        //System.err.println(e.getCause());
+                                        tempUserClassList.add(completeClassNameList.get(i));
+                                        userClassList.add(completeClassNameList.get(i));
+                                    }
+
+                                }
+                                //过滤掉反射不到的类
+                                for (int i = 0; i < tempUserClassList.size(); i++) {
+                                    completeClassNameList.remove(tempUserClassList.get(i));
+                                }
+                                tempUserClassList.removeAll(tempUserClassList);
+                                //处理field
+                                for (int i = 0; i < fieldExpressionList.size(); i++) {
+                                    creator.convert(fieldExpressionList.get(i));
+                                }
+                                //处理method中的parameter
+                                for (int i = 0; i < parameterExpressionList.size(); i++) {
+                                    creator.convert(parameterExpressionList.get(i));
+                                }
+                                CodeTree codeTree = constructTreeFromAST(completeClassNameList, parameterNameList, typeMapList,
+                                        completeTypeMapList, starImportStringList, method, creator, userClassProcessing, true, "");
+                                if (codeTree != null && codeTree.getRoot() != null && codeTree.getTotalNumber() <= 1574) {
+                    /*display the code tree*/
+                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
+                                    //displayTree(codeTree,false);
+                    /*store the code tree in mongodb*/
+                                    //storeTreeInDB(codeTree);
+                    /*construct training tree data */
+                                    //constructTrainingData(codeTree, trainingTreePath, trainingPredictionPath, classPath, generationNodePath,treeSentencePath,jarPath, holeSizePath, true);
+                                } else {
+                                    System.err.println("So " + method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()) + " (" + ") " + " can not be correctly parsed");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+	public CodeTree constructTreeFromAST(List<String> completeClassNameList, List<String> parameterNameList,
+            List<String> typeMapList, List<String> completeTypeMapList,
+            List<String> starImportStringList, MethodDeclaration method,
+            SimplifiedTreeCreator fieldCreator, UserClassProcessing userClassProcessing,
+            boolean holeFlag, String globalPath) {
+		try {
+		SimplifiedTreeCreator creator = new SimplifiedTreeCreator(completeClassNameList, fieldCreator, globalPath);
+		creator.setHoleFlag(holeFlag);
+		for (int i = 0; i < parameterNameList.size(); i++) {
+		creator.addClass_variable_list(parameterNameList.get(i));
+		}
+		for (int i = 0; i < typeMapList.size(); i++) {
+		String[] strings = typeMapList.get(i).split(" ");
+		creator.addClass_variable(strings[0], strings[1]);
+		}
+		for (int i = 0; i < completeTypeMapList.size(); i++) {
+		creator.addClass_name_map(completeTypeMapList.get(i));
+		}
+		creator.setStarImportStringList(starImportStringList);
+		creator.setUserClassProcessing(userClassProcessing);
+		creator.toCodeTree(method);
+		CodeTree codeTree = new CodeTree();
+		codeTree.setRoot(creator.getCodeTree().getRoot());
+		if (creator.getParsedFlag()) {
+		return codeTree;
+		} else {
+		return null;
+		}
+		} catch (Exception e) {
+		return null;
+		} catch (Error e) {
+		return null;
+		}
+	}
+		
+	public void displayTree(CodeTree codeTree, boolean isCompleteFlag, String title) {
+		TreeView treeView = new TreeView();
+		treeView.convertCodeTree(codeTree, isCompleteFlag);
+		DisplayTreeView display = new DisplayTreeView(treeView.getTree(), title);
+		
 	}
 }

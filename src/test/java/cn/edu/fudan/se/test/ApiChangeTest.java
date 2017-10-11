@@ -9,7 +9,7 @@ public class ApiChangeTest {
 	String repositoryPath2 = "D:/github/ChangeExtractor";
 	ApiChangeExtractor apiExactor = new ApiChangeExtractor(repositoryPath1);
 	@Test
-	public void testGetLastCommit(){
+	public void testExtractApiChange(){
 		apiExactor.extractApiChange();
 	}
 }
