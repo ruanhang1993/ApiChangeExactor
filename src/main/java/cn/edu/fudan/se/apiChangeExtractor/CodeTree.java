@@ -2,9 +2,11 @@ package cn.edu.fudan.se.apiChangeExtractor;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 public class CodeTree{
 
@@ -13,8 +15,18 @@ public class CodeTree{
     private Map<String, String> class_variable = new HashMap<String, String>();
     private List<String> class_variable_list = new ArrayList<>();
     private Map<String, String> class_name_map = new HashMap<>();
+    private Map<String, Set<String>> jdkCall = new HashMap<>();
 
-    public Map<String, String> getClass_variable() {
+    
+    public Map<String, Set<String>> getJdkCall() {
+		return jdkCall;
+	}
+
+	public void setJdkCall(Map<String, Set<String>> jdkCall) {
+		this.jdkCall = jdkCall;
+	}
+
+	public Map<String, String> getClass_variable() {
         return class_variable;
     }
 
@@ -63,7 +75,7 @@ public class CodeTree{
         root = null;
     }
 
-    public void addNode(TreeNode node, TreeNode newNode) { // first parameter
+    public void addNode(String key, TreeNode node, TreeNode newNode) { // first parameter
         // "node" is the
         // node that will to
         // be the parent of
@@ -76,6 +88,14 @@ public class CodeTree{
             node.getChildNodes().add(newNode);
             newNode.setParentNode(node);
         }
+        if((!"".equals(key)) && (newNode!=null)){
+    		if(jdkCall.get(key)!=null){
+    			jdkCall.get(key).add(newNode.getCompleteMethodDeclaration());
+    		}else{
+    			jdkCall.put(key, new HashSet<String>());
+    			jdkCall.get(key).add(newNode.getCompleteMethodDeclaration());
+    		}
+    	}
     }
 
 //    public void addNodeRecurrently(TreeNode parentNode, TreeNode node) {

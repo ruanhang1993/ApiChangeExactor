@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jgit.diff.DiffEntry;
@@ -61,7 +63,12 @@ public class ApiChangeExtractor {
 					for(SourceCodeChange change:changes){
 						System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
 					}
-					constructData(changes,newFile);
+					Map<String, Set<String>> jdkCall = constructData(newFile);
+					if(jdkCall!=null){
+						for(String s : jdkCall.keySet()){
+							System.out.println(s+"//"+jdkCall.get(s));
+						}
+					}
 					while(true){}
 //					newFile.delete();
 //					oldFile.delete();
@@ -70,7 +77,7 @@ public class ApiChangeExtractor {
 		}
 		tempDir.delete();
 	}
-	public void constructData(List<SourceCodeChange> changes, File file){
+	public Map<String, Set<String>> constructData(File file){
         JapaAst japaAst = new JapaAst(true);
         List<String> tempList = new ArrayList<>();
         CompilationUnit cu = null;
@@ -202,6 +209,7 @@ public class ApiChangeExtractor {
                                 if (codeTree != null && codeTree.getRoot() != null && codeTree.getTotalNumber() <= 1574) {
                     /*display the code tree*/
                                     displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
+                                    return codeTree.getJdkCall();
                                     //displayTree(codeTree,false);
                     /*store the code tree in mongodb*/
                                     //storeTreeInDB(codeTree);
@@ -209,6 +217,7 @@ public class ApiChangeExtractor {
                                     //constructTrainingData(codeTree, trainingTreePath, trainingPredictionPath, classPath, generationNodePath,treeSentencePath,jarPath, holeSizePath, true);
                                 } else {
                                     System.err.println("So " + method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()) + " (" + ") " + " can not be correctly parsed");
+                                    return null;
                                 }
                             }
                         }
@@ -216,6 +225,7 @@ public class ApiChangeExtractor {
                 }
             }
         }
+		return null;
     }
 	public CodeTree constructTreeFromAST(List<String> completeClassNameList, List<String> parameterNameList,
             List<String> typeMapList, List<String> completeTypeMapList,
@@ -239,6 +249,7 @@ public class ApiChangeExtractor {
 		creator.setUserClassProcessing(userClassProcessing);
 		creator.toCodeTree(method);
 		CodeTree codeTree = new CodeTree();
+		codeTree.setJdkCall(creator.getCodeTree().getJdkCall());
 		codeTree.setRoot(creator.getCodeTree().getRoot());
 		if (creator.getParsedFlag()) {
 		return codeTree;

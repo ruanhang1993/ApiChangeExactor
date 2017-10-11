@@ -75,7 +75,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         return parsedFlag;
     }
 
-    public void addClass_name_map(String type) {
+	public void addClass_name_map(String type) {
         if (class_name_map.get(type) == null) {
             class_name_map.put(type, type);
         }
@@ -112,10 +112,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 if (!(e instanceof ClassNotFoundException)) {
                     parsedFlag = false;
                 }
-                //System.err.println(e.getMessage());
+                System.err.println(e.getMessage());
             } catch (Error e) {
                 parsedFlag = false;
-                //System.err.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
 
         }
@@ -188,7 +188,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             if (str.equals("//hole")) {
                 TreeNode node = new TreeNode();
                 node.setCompleteMethodDeclaration("//hole");
-                addNode(node);
+                addNode(n.toString(),node);
             }
         }
         return codeTree;
@@ -200,7 +200,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "break", "break", "", "");
         node.setAddMethodName(false);
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
         lastNode = node;
         return codeTree;
     }
@@ -211,7 +211,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "continue", "continue", "", "");
         node.setAddMethodName(false);
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
 
         lastNode = node;
         return codeTree;
@@ -223,13 +223,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "doWhile", "doWhile", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode(lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -296,7 +296,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (forStmt != null) {
             if (n.getVariable().getVars().size() > 1) {
                 parsedFlag = false;
-                //System.err.println(n.getVariable() + " " + "can not be parsed");
+                System.err.println(n.getVariable() + " " + "can not be parsed");
             } else {
                 String temporaryVariable;
                 //deal with for each
@@ -304,13 +304,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 setNodeClassAndMethod(node, "foreach", "foreach", "", "");
                 node.setControl(true);
                 node.setExit(false);
-                codeTree.addNode(lastNode, node);
+                codeTree.addNode("",lastNode, node);
                 //add condition node
                 lastNode = node;
                 TreeNode conditionNode = new TreeNode();
                 setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
                 conditionNode.setAddMethodName(false);
-                codeTree.addNode(lastNode, conditionNode);
+                codeTree.addNode("",lastNode, conditionNode);
                 lastNode = conditionNode;
                 // deal with the condition in for each
             /*deal with variable declaration on the left of ":"*/
@@ -318,7 +318,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 convert(n.getVariable());
                 if (tempNode.equals(lastNode)) {
                     TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                    addNode(temp);
+                    addNode(n.toString(),temp);
                 }
                 lastNode.setCondition(true);
                 temporaryVariable = class_variable_list.get(class_variable_list.size() - 1);
@@ -327,7 +327,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 colonNode.setCondition(true);
                 setNodeClassAndMethod(colonNode, ":", ":", "", "");
                 colonNode.setAddMethodName(false);
-                codeTree.addNode(lastNode, colonNode);
+                codeTree.addNode("",lastNode, colonNode);
                 lastNode = colonNode;
             /*deal with the variable on the right of ":"*/
                 dealForEachAndSwitchIterable(n.getIterable());
@@ -360,7 +360,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         } else {
             parsedFlag = false;
-            //System.err.println(n + " can not be parsed");
+            System.err.println(n + " can not be parsed");
         }
         return codeTree;
     }
@@ -371,14 +371,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "for", "for", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
 
         // add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode(lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode);
         lastNode = conditionNode;
         List<String> variableList = new ArrayList<>();
         //deal with condition in for
@@ -389,7 +389,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(semicolonNode, ";", ";", "", "");
         semicolonNode.setCondition(true);
         semicolonNode.setAddMethodName(false);
-        codeTree.addNode(conditionNode, semicolonNode);
+        codeTree.addNode("",conditionNode, semicolonNode);
         lastNode = semicolonNode;
         /*deal with compare*/
         if (n.getCompare() != null) {
@@ -399,7 +399,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode(lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode);
             lastNode = emptyNode;
         }
         /*add second ";"*/
@@ -407,7 +407,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(secondSemicolonNode, ";", ";", "", "");
         secondSemicolonNode.setCondition(true);
         secondSemicolonNode.setAddMethodName(false);
-        codeTree.addNode(conditionNode, secondSemicolonNode);
+        codeTree.addNode("",conditionNode, secondSemicolonNode);
         lastNode = secondSemicolonNode;
         /*deal with update*/
         if (n.getUpdate() != null) {
@@ -418,7 +418,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     setNodeClassAndMethod(commaNode, ",", ",", "", "");
                     commaNode.setCondition(true);
                     commaNode.setAddMethodName(false);
-                    codeTree.addNode(lastNode, commaNode);
+                    codeTree.addNode("",lastNode, commaNode);
                     lastNode = commaNode;
                 }
                 dealCondition(n.getUpdate().get(i), lastNode);
@@ -428,7 +428,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode(lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode);
             lastNode = emptyNode;
         }
         // add end node
@@ -481,13 +481,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         }
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode(lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -554,13 +554,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
             lastNode = node;
             elseIfFlag = false;
         }
+        
         return codeTree;
     }
 
     @Override
     protected CodeTree convert(LabeledStmt n) {
         parsedFlag = false;
-        //System.err.println(n + " " + "can not be parsed");
+        System.err.println(n + " " + "can not be parsed");
         return codeTree;
     }
 
@@ -570,7 +571,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "return", "return", "", "");
         node.setAddMethodName(false);
         node.setExit(true);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
 
         lastNode = node;
         return codeTree;
@@ -579,7 +580,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
     @Override
     protected CodeTree convert(SynchronizedStmt n) {
         parsedFlag = false;
-        //System.err.println(n + " " + "can not be parsed");
+        System.err.println(n + " " + "can not be parsed");
         return codeTree;
     }
 
@@ -589,14 +590,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode tryNode = new TreeNode();
         setNodeClassAndMethod(tryNode, "try", "try", "", "");
         tryNode.setControl(true);
-        codeTree.addNode(lastNode, tryNode);
+        codeTree.addNode("",lastNode, tryNode);
         //get the body of try node
         if (n.getResources().size() == 0) {
             if (n.getTryBlock().getChildrenNodes().size() == 0 || isAllAnnotationStmt(n.getTryBlock().getChildrenNodes())) {
                 TreeNode tryStmtNode = new TreeNode();
                 setNodeClassAndMethod(tryStmtNode, "EmptyStatement", "EmptyStatement", "", "");
                 tryStmtNode.setAddMethodName(false);
-                codeTree.addNode(tryNode, tryStmtNode);
+                codeTree.addNode("",tryNode, tryStmtNode);
                 lastNode = tryStmtNode;
             } else {
                 lastNode = tryNode;
@@ -610,21 +611,21 @@ public class SimplifiedTreeCreator extends TreeConverter {
             TreeNode catchStmtNode = new TreeNode();
             setNodeClassAndMethod(catchStmtNode, "EmptyStatement", "EmptyStatement", "", "");
             catchStmtNode.setAddMethodName(false);
-            codeTree.addNode(catchNode, catchStmtNode);
-            codeTree.addNode(lastNode, catchNode);
+            codeTree.addNode("",catchNode, catchStmtNode);
+            codeTree.addNode("",lastNode, catchNode);
             // add finally node if exits
             lastNode = catchNode;
             if (n.getFinallyBlock() != null) {
                 TreeNode finallyNode = new TreeNode();
                 setNodeClassAndMethod(finallyNode, "finally", "finally", "", "");
                 finallyNode.setControl(true);
-                codeTree.addNode(lastNode, finallyNode);
+                codeTree.addNode("",lastNode, finallyNode);
                 lastNode = finallyNode;
                 if (n.getFinallyBlock().getChildrenNodes().size() == 0 || isAllAnnotationStmt(n.getFinallyBlock().getChildrenNodes())) {
                     TreeNode finallyStmtNode = new TreeNode();
                     setNodeClassAndMethod(finallyStmtNode, "EmptyStatement", "EmptyStatement", "", "");
                     finallyStmtNode.setAddMethodName(false);
-                    codeTree.addNode(finallyNode, finallyStmtNode);
+                    codeTree.addNode("",finallyNode, finallyStmtNode);
                     lastNode = finallyStmtNode;
                 } else {
                     toCodeTree(n.getFinallyBlock());
@@ -644,7 +645,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         return codeTree;
     }
@@ -660,13 +661,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "while", "while", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode(lastNode, node);
+        codeTree.addNode("",lastNode, node);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode(lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -702,7 +703,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
     @Override
     protected CodeTree convert(ExplicitConstructorInvocationStmt n) {
         parsedFlag = false;
-        //System.err.println(n + " " + "can not be parsed");
+        System.err.println(n + " " + "can not be parsed");
         return codeTree;
     }
 
@@ -711,14 +712,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode switchNode = new TreeNode();
         setNodeClassAndMethod(switchNode, "switch", "switch", "", "");
         switchNode.setControl(true);
-        codeTree.addNode(lastNode, switchNode);
+        codeTree.addNode("",lastNode, switchNode);
         //deal condition in switch
         /*add condition node*/
         lastNode = switchNode;
         TreeNode switchConditionNode = new TreeNode();
         setNodeClassAndMethod(switchConditionNode, "condition", "condition", "", "");
         switchConditionNode.setAddMethodName(false);
-        codeTree.addNode(lastNode, switchConditionNode);
+        codeTree.addNode("",lastNode, switchConditionNode);
         lastNode = switchConditionNode;
         /*deal condition*/
         dealForEachAndSwitchIterable(n.getSelector());
@@ -747,7 +748,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             lastNode = switchNode.getChildNodes().get(i);
             if (n.getEntries().get(i - 1).getStmts() != null && n.getEntries().get(i - 1).getStmts().size() > 1) {
                 parsedFlag = false;
-                //System.err.println(n.getEntries().get(i - 1).getStmts() + " " + "can not be parsed");
+                System.err.println(n.getEntries().get(i - 1).getStmts() + " " + "can not be parsed");
                 break;
             }
             if (n.getEntries().get(i - 1).getStmts() != null && n.getEntries().get(i - 1).getStmts().get(0).getChildrenNodes().size() != 0
@@ -792,7 +793,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 if (codeTree.getHoleNode() == null) {
                     TreeNode node = new TreeNode();
                     node.setCompleteMethodDeclaration("//hole");
-                    addNode(node);
+                    addNode(stmt.toString(),node);
                 }
             }
             toCodeTree(stmt);
@@ -811,7 +812,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 type2 = type1;
                 if (n.getType().toString().contains("[")) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + " can not be parsed");
+                    System.err.println(n.toString() + " can not be parsed");
                 }
             }
             if (n.getVars().get(i).getId().toString().contains("[")) {
@@ -885,16 +886,16 @@ public class SimplifiedTreeCreator extends TreeConverter {
                                 if(right instanceof MethodCallExpr){
                                     dealMethodExpr((MethodCallExpr)right,node);
                                     if(!node.getCompleteClassName().equals("userDefinedClass")){
-                                        addNode(assignNew);
-                                        addNode(node);
+                                        addNode("",assignNew);
+                                        addNode(n.toString(),node);
                                         flag = false;
                                         break;
                                     }
                                 }else if(right instanceof FieldAccessExpr){
                                     dealFieldAccessExpr((FieldAccessExpr)right,node);
                                     if(!node.getCompleteClassName().equals("userDefinedClass")){
-                                        addNode(assignNew);
-                                        addNode(node);
+                                        addNode("",assignNew);
+                                        addNode(n.toString(),node);
                                         flag = false;
                                         break;
                                     }
@@ -904,14 +905,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                                 String constant = handleConstant(n.getVars().get(i).getInit().toString());
                                 type += constant + preserveSquareBracket(type1);
                                 setNodeMethod(node, type, type);
-                                addNode(node);
+                                addNode(n.toString(),node);
                                 verifyFlag = false;
                             }
                         } else if (n.getVars().get(i).getInit().getChildrenNodes().size() == 0 && !n.getVars().get(i).getInit().toString().contains("{")) {//this condition is equivalent the condition "n.getVars().get(0).getInit() instanceof IntegerExpr || DoubleExpr"
                             String constant = handleConstant(n.getVars().get(i).getInit().toString());
                             type += constant + preserveSquareBracket(type1);
                             setNodeMethod(node, type, type);
-                            addNode(node);
+                            addNode(n.toString(),node);
                             verifyFlag = false;
                         } else if (n.getVars().get(i).getInit() instanceof MethodCallExpr) {
                             MethodCallExpr expr = (MethodCallExpr) n.getVars().get(i).getInit();
@@ -920,7 +921,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             assignNewNode.setCondition(false);
                             assignNewNode.setExit(false);
                             setNodeClassAndMethod(assignNewNode, "AssignNew", "AssignNew", "", "");
-                            codeTree.addNode(lastNode, assignNewNode);
+                            codeTree.addNode("",lastNode, assignNewNode);
                             lastNode = assignNewNode;
                             TreeNode methodNode = new TreeNode();
                             dealMethodExpr(expr, methodNode);
@@ -930,9 +931,9 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
                             if (userClassProcessing.isUserClassProcessing(methodNode.getCompleteClassName())) {
                                 setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                addNode(node);
+                                addNode(n.toString(),node);
                             } else {
-                                addNode(methodNode);
+                                addNode(n.toString(),methodNode);
                             }
                             //verifyFlag = false;
                         } else if (n.getVars().get(i).getInit() instanceof ObjectCreationExpr) {
@@ -956,14 +957,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             dealArrayAccessExprVariableType(expr, arrayAccessNode);
                             if (!userClassProcessing.isUserClassProcessing(arrayAccessNode.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(arrayAccessNode, arrayAccessNode.getClassName())) {
                                 parsedFlag = false;
-                                //System.err.println(n.toString() + ": can not be parsed");
-                                addNode(arrayAccessNode);
+                                System.err.println(n.toString() + ": can not be parsed");
+                                addNode(n.toString(),arrayAccessNode);
                                 return null;
                             } else if (!userClassProcessing.isUserClassProcessing(arrayAccessNode.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(arrayAccessNode, arrayAccessNode.getClassName())) {
-                                addNode(arrayAccessNode);
+                                addNode(n.toString(),arrayAccessNode);
                             } else {
                                 setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                addNode(node);
+                                addNode(n.toString(),node);
                                 verifyFlag = false;
                             }
                             dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
@@ -975,7 +976,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                                 convert(expr, type1);
                             } else {
                                 parsedFlag = false;
-                                //System.err.println(n.toString() + " can not be parsed");
+                                System.err.println(n.toString() + " can not be parsed");
                             }
                             //verifyFlag = false;
                         } else if (n.getVars().get(i).getInit() instanceof FieldAccessExpr) {
@@ -985,34 +986,34 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             assignNewNode.setCondition(false);
                             assignNewNode.setExit(false);
                             setNodeClassAndMethod(assignNewNode, "AssignNew", "AssignNew", "", "");
-                            codeTree.addNode(lastNode, assignNewNode);
+                            codeTree.addNode("",lastNode, assignNewNode);
                             lastNode = assignNewNode;
                             TreeNode fieldNode = new TreeNode();
                             dealFieldAccessExpr(expr, fieldNode);
                             if (fieldNode.getCompleteClassName() != null) {
                                 if (!userClassProcessing.isUserClassProcessing(fieldNode.getCompleteClassName()) && !(fieldNode.getCompleteClassName().contains("[]"))) {
                                     returnType = getMethodReturnType(fieldNode);
-                                    addNode(fieldNode);
+                                    addNode(n.toString(),fieldNode);
                                 } else if (userClassProcessing.isUserClassProcessing(fieldNode.getCompleteClassName())) {
                                     returnType = "userDefinedClass";
                                     setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                    addNode(node);
+                                    addNode(n.toString(),node);
                                 } else {
                                     returnType = "int";//represent the return type of String[].length,int[].length etc..
-                                    addNode(fieldNode);
+                                    addNode(n.toString(),fieldNode);
                                 }
                                 dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
                                 //verifyFlag = false;
                             } else {
                                 parsedFlag = false;
-                                //System.err.println(n + " can not be parsed");
+                                System.err.println(n + " can not be parsed");
                             }
                         }
                         else {
                             String constant = handleConstant(n.getVars().get(i).getInit().toString());
                             type += constant + preserveSquareBracket(type1);
                             setNodeMethod(node, type, type);
-                            addNode(node);
+                            addNode(n.toString(),node);
                             verifyFlag = false;
                         }
                         returnType = null;
@@ -1023,7 +1024,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         } else {
                             setNodeMethod(node, "Null", "Null");
                         }
-                        addNode(node);
+                        addNode(n.toString(),node);
                         verifyFlag = false;
                     }
                 } else {
@@ -1032,16 +1033,18 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     } else {
                         setNodeMethod(node, "Declaration", "Declaration");
                     }
-                    addNode(node);
+                    addNode(n.toString(),node);
                     verifyFlag = false;
                 }
                 if (!verifyFlag && !userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                     return null;
                 }
             }
+//            addToJdkCall(n.toString(),lastNode);
         }
+        
         return codeTree;
     }
 
@@ -1051,8 +1054,11 @@ public class SimplifiedTreeCreator extends TreeConverter {
         dealMethodExpr(n, node);
         //addNode(node);
         if (node.getCompleteClassName() != null && !node.getCompleteClassName().equals("userDefinedClass")) {
-            addNode(node);
+            addNode(n.toString(),node);
             returnType = getMethodReturnType(node);
+            //System.out.println(n.toString());
+//            addToJdkCall(n.toString(),lastNode);
+           // System.out.println(codeTree.getJdkCall().size());
         }
         return codeTree;
 
@@ -1095,10 +1101,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
             // this fragment code is used to compare whether the node.toSting() is consistent with method declaration
             if (!verifyMethodNameAndParameter(node, n.getArgs())) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(node);
+            addNode(n.toString(),node);
         }
         return codeTree;
     }
@@ -1128,10 +1134,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeMethod(node, "new" + methodArguments, "new" + completeMethodArguments);
             if (!verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(node);
+            addNode(n.toString(),node);
         }
         return codeTree;
     }
@@ -1141,10 +1147,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
         dealArrayAccessExprVariableType(n, node);
         if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
             parsedFlag = false;
-            //System.err.println(n.toString() + ": can not be parsed");
+            System.err.println(n.toString() + ": can not be parsed");
             return null;
         } else if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
-            addNode(node);
+            addNode(n.toString(),node);
         } else if (userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
             // nothing to do
         }
@@ -1161,10 +1167,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else {
             if (!verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(node);
+            addNode(n.toString(),node);
         }
         return codeTree;
     }
@@ -1195,10 +1201,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
             } else {
                 if (!verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                     return null;
                 }
-                addNode(node);
+                addNode(n.toString(),node);
             }
         }
         return codeTree;
@@ -1211,16 +1217,16 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (node.getCompleteClassName() != null) {
             if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !(node.getCompleteClassName().contains("[]"))) {
                 returnType = getMethodReturnType(node);
-                addNode(node);
+                addNode(n.toString(),node);
             } else if (userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
                 returnType = "userDefinedClass";
             } else {
                 returnType = "int";//represent the return type of String[].length,int[].length etc..
-                addNode(node);
+                addNode(n.toString(),node);
             }
         } else {
             parsedFlag = false;
-            //System.err.println(n + " can not be parsed");
+            System.err.println(n + " can not be parsed");
         }
         return codeTree;
     }
@@ -1229,7 +1235,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode node = new TreeNode();
         dealUnaryExpr(n, node);
         if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
-            addNode(node);
+            addNode(n.toString(),node);
         }
         return codeTree;
     }
@@ -1251,12 +1257,12 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 } catch (Exception e) {
                     if (!(e instanceof ClassNotFoundException)) {
                         parsedFlag = false;
-                        //System.err.println(e.getMessage());
+                        System.err.println(e.getMessage());
                     }
                     // nothing to do
                 } catch (Error e) {
                     parsedFlag = false;
-                    //System.err.println(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
             }
         }
@@ -1272,7 +1278,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         commaNode.setCondition(true);
                         setNodeClassAndMethod(commaNode, ",", ",", "", "");
                         commaNode.setAddMethodName(false);
-                        codeTree.addNode(lastNode, commaNode);
+                        codeTree.addNode("",lastNode, commaNode);
                         lastNode = commaNode;
                     }
                     dealCondition(n.getInit().get(i), lastNode);
@@ -1286,7 +1292,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     convert(expr);
                     if (node.equals(lastNode)) {
                         TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                        addNode(temp);
+                        addNode(n.toString(),temp);
                     }
                     lastNode.setCondition(true);
                     variableList.add(class_variable_list.get(class_variable_list.size() - 1));
@@ -1298,7 +1304,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             commaNode.setCondition(true);
                             setNodeClassAndMethod(commaNode, ",", ",", "", "");
                             commaNode.setAddMethodName(false);
-                            codeTree.addNode(lastNode, commaNode);
+                            codeTree.addNode("",lastNode, commaNode);
                             lastNode = commaNode;
                         }
                         VariableDeclarationExpr singleVariableDeclarationExpr = new VariableDeclarationExpr();
@@ -1310,7 +1316,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         convert(singleVariableDeclarationExpr);
                         if (node.equals(lastNode)) {
                             TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                            addNode(temp);
+                            addNode(n.toString(),temp);
                         }
                         lastNode.setCondition(true);
                         variableList.add(class_variable_list.get(class_variable_list.size() - 1));
@@ -1318,14 +1324,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 }
             } else {
                 parsedFlag = false;
-                //System.err.println(n + " " + "can not be parsed");
+                System.err.println(n + " " + "can not be parsed");
             }
         } else {
             TreeNode emptyNode = new TreeNode();
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode(lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode);
             lastNode = emptyNode;
         }
     }
@@ -1341,7 +1347,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             convert((FieldAccessExpr) n);
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         lastNode.setCondition(true);
     }
@@ -1365,7 +1371,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 } else if (getOperator(operator).equals("||")) {
                     setNodeClassAndMethod(operatorNode, "||", "||", "", "");
                 }
-                codeTree.addNode(node, operatorNode);
+                codeTree.addNode("",node, operatorNode);
                 lastNode = operatorNode;
                 //处理right expression
                 Expression right = ((BinaryExpr) n).getRight();
@@ -1390,7 +1396,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             currentNode.setCondition(true);
             String constant = handleConstant(n.toString());
             setNodeClassAndMethod(currentNode, constant, constant, "", "");
-            codeTree.addNode(lastNode, currentNode);
+            codeTree.addNode("",lastNode, currentNode);
             lastNode = currentNode;
         } else if (n instanceof AssignExpr) {
             dealAssignCondition(n, node);
@@ -1402,7 +1408,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             dealFieldAccessExpr((FieldAccessExpr) n, node);
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
     }
 
@@ -1412,7 +1418,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         bracketNode.setAddMethodName(false);
         bracketNode.setCondition(true);
         setNodeClassAndMethod(bracketNode, bracket, bracket, "", "");
-        codeTree.addNode(node, bracketNode);
+        codeTree.addNode("",node, bracketNode);
         lastNode = bracketNode;
     }
 
@@ -1428,11 +1434,11 @@ public class SimplifiedTreeCreator extends TreeConverter {
             } else {
                 setNodeClassAndMethod(castNode, type, class_name_map.get(type), "Cast", "Cast");
             }
-            codeTree.addNode(node, castNode);
+            codeTree.addNode(n.toString(),node, castNode);
             lastNode = castNode;
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         dealCondition(expr.getExpr(), castNode);
     }
@@ -1454,7 +1460,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         equalNode.setAddMethodName(false);
         equalNode.setCondition(true);
         setNodeClassAndMethod(equalNode, operator, operator, "", "");
-        codeTree.addNode(lastNode, equalNode);
+        codeTree.addNode("",lastNode, equalNode);
         lastNode = equalNode;
         //处理value
         dealCondition(expr.getValue(), lastNode);
@@ -1466,12 +1472,12 @@ public class SimplifiedTreeCreator extends TreeConverter {
         newNode.setCondition(true);
         if (!userClassProcessing.isUserClassProcessing(newNode.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(newNode, newNode.getClassName())) {
             parsedFlag = false;
-            //System.err.println(n.toString() + ": can not be parsed");
+            System.err.println(n.toString() + ": can not be parsed");
         } else if (!userClassProcessing.isUserClassProcessing(newNode.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(newNode, newNode.getClassName())) {
-            addNode(newNode);
+            addNode(n.toString(),newNode);
         } else if (userClassProcessing.isUserClassProcessing(newNode.getCompleteClassName())) {
             TreeNode userNode = userClassProcessing.createArrayAccessExprNode();
-            addNode(userNode);
+            addNode(n.toString(),userNode);
         }
     }
 
@@ -1504,10 +1510,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 type = "userDefinedClass";
             }
             setNodeClassAndMethod(nameNode, type, type, "", "");
-            codeTree.addNode(node, nameNode);
+            codeTree.addNode("",node, nameNode);
             lastNode = nameNode;
         } else {
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
             parsedFlag = false;
         }
     }
@@ -1519,42 +1525,42 @@ public class SimplifiedTreeCreator extends TreeConverter {
         unaryNode.setAddMethodName(false);
         if (expr.getOperator().toString().equals("not")) {//!
             setNodeClassAndMethod(unaryNode, "!", "!", "", "");
-            codeTree.addNode(node, unaryNode);
+            codeTree.addNode("",node, unaryNode);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("posIncrement")) {//后++
             dealCondition(expr.getExpr(), node);
             setNodeClassAndMethod(unaryNode, "++", "++", "", "");
-            codeTree.addNode(lastNode, unaryNode);
+            codeTree.addNode("",lastNode, unaryNode);
             lastNode = unaryNode;
         } else if (expr.getOperator().toString().equals("preIncrement")) {//前++
             setNodeClassAndMethod(unaryNode, "++", "++", "", "");
-            codeTree.addNode(node, unaryNode);
+            codeTree.addNode("",node, unaryNode);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("posDecrement")) {//后--
             dealCondition(expr.getExpr(), node);
             setNodeClassAndMethod(unaryNode, "--", "--", "", "");
-            codeTree.addNode(lastNode, unaryNode);
+            codeTree.addNode("",lastNode, unaryNode);
             lastNode = unaryNode;
         } else if (expr.getOperator().toString().equals("preDecrement")) {//前--
             setNodeClassAndMethod(unaryNode, "--", "--", "", "");
-            codeTree.addNode(node, unaryNode);
+            codeTree.addNode("",node, unaryNode);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("positive")) {//+
             setNodeClassAndMethod(unaryNode, "+", "+", "", "");
-            codeTree.addNode(node, unaryNode);
+            codeTree.addNode("",node, unaryNode);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("negative")) {//-
             setNodeClassAndMethod(unaryNode, "-", "-", "", "");
-            codeTree.addNode(node, unaryNode);
+            codeTree.addNode("",node, unaryNode);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
     }
 
@@ -1576,7 +1582,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             parsedFlag = false;
         }
         setNodeClassAndMethod(booleanNode, n.toString(), n.toString(), "", "");
-        codeTree.addNode(node, booleanNode);
+        codeTree.addNode(n.toString(),node, booleanNode);
         lastNode = booleanNode;
     }
 
@@ -1585,7 +1591,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode conditionContentNode = new TreeNode();
         conditionContentNode.setCondition(true);
         dealMethodExpr(expr, conditionContentNode);
-        codeTree.addNode(node, conditionContentNode);
+        codeTree.addNode(n.toString(),node, conditionContentNode);
         lastNode = conditionContentNode;
     }
 
@@ -1611,7 +1617,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(operatorNode, ope, ope, "", "");
         operatorNode.setAddMethodName(false);
         operatorNode.setCondition(true);
-        codeTree.addNode(lastNode, operatorNode);
+        codeTree.addNode("",lastNode, operatorNode);
         lastNode = operatorNode;
         // add right node
         rightNode.setCondition(true);
@@ -1672,7 +1678,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 break;
             default:
                 parsedFlag = false;
-                //System.err.println(ope + " " + "can not be parsed");
+                System.err.println(ope + " " + "can not be parsed");
         }
         return ope;
     }
@@ -1685,19 +1691,19 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else if (n instanceof NullLiteralExpr) {
             currentNode.setAddMethodName(false);
             setNodeClassAndMethod(currentNode, "null", "null", "", "");
-            codeTree.addNode(parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode);
             lastNode = currentNode;
         } else if (n instanceof FieldAccessExpr) {
             FieldAccessExpr expr = (FieldAccessExpr) n;
             dealFieldAccessExpr(expr, currentNode);
-            codeTree.addNode(parentNode, currentNode);
+            codeTree.addNode(n.toString(),parentNode, currentNode);
             lastNode = currentNode;
         } else if (n instanceof StringLiteralExpr || n instanceof IntegerLiteralExpr
                 || n instanceof CharLiteralExpr || n instanceof DoubleLiteralExpr) {
             currentNode.setAddMethodName(false);
             String constant = handleConstant(n.toString());
             setNodeClassAndMethod(currentNode, constant, constant, "", "");
-            codeTree.addNode(parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode);
             lastNode = currentNode;
         } else if (n instanceof BooleanLiteralExpr) {
             dealBooleanLiteralCondition(n, parentNode);
@@ -1706,12 +1712,12 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else if (n instanceof ArrayAccessExpr) {
             currentNode.setAddMethodName(false);
             setNodeClassAndMethod(currentNode, "arrayAccess", "arrayAccess", "", "");
-            codeTree.addNode(parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode);
             lastNode = currentNode;
         } else if (n instanceof CastExpr) {
             dealCastCondition(n, parentNode);
         } else {
-            //System.err.println(n + " can not be parsed");
+            System.err.println(n + " can not be parsed");
             parsedFlag = false;
         }
         currentNode.setCondition(true);
@@ -1823,7 +1829,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             returnType = completeType;
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         node.setExit(false);
     }
@@ -1843,7 +1849,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         setNodeMethod(node, node.getMethodName() + "." + n.getField(), node.getCompleteMethodName() + "." + n.getField());
                     } else {
                         parsedFlag = false;
-                        //System.err.println(n.getField() + " " + "can not be parsed");
+                        System.err.println(n.getField() + " " + "can not be parsed");
                     }
                 } else {
                     String[] strs = type.split("\\.");
@@ -1853,18 +1859,18 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     setNodeClassAndMethod(tempNode, simpleType, type, n.getField(), n.getField());
                     if (!verifyFieldAccess(tempNode)) {
                         parsedFlag = false;
-                        //System.err.println(n.toString() + ": can not be parsed");
+                        System.err.println(n.toString() + ": can not be parsed");
                     } else {
                         setNodeMethod(node, node.getMethodName() + "." + n.getField(), node.getCompleteMethodName() + "." + n.getField());
                     }
                 }
             } else {
                 parsedFlag = false;
-                //System.err.println(n + " can not be parsed");
+                System.err.println(n + " can not be parsed");
             }
         } else {
             parsedFlag = false;
-            //System.err.println(n.toString() + " " + "can not be parsed");
+            System.err.println(n.toString() + " " + "can not be parsed");
         }
     }
 
@@ -1879,7 +1885,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             dealFieldAccessExpr((FieldAccessExpr) n.getInner(), node);
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
     }
 
@@ -1889,27 +1895,27 @@ public class SimplifiedTreeCreator extends TreeConverter {
         assignNode.setAddMethodName(false);
         if (n.getOperator().toString().equals("minus")) {
             setNodeClassAndMethod(assignNode, "MinusAssign", "MinusAssign", "", "");
-            codeTree.addNode(lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("plus")) {
             setNodeClassAndMethod(assignNode, "PlusAssign", "PlusAssign", "", "");
-            codeTree.addNode(lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("assign")) {
             setNodeClassAndMethod(assignNode, "Assign", "Assign", "", "");
-            codeTree.addNode(lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("star")) {
             setNodeClassAndMethod(assignNode, "StarAssign", "StarAssign", "", "");
-            codeTree.addNode(lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("slash")) {
             setNodeClassAndMethod(assignNode, "SlashAssign", "SlashAssign", "", "");
-            codeTree.addNode(lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode);
             lastNode = assignNode;
         } else {
             parsedFlag = false;
-            //System.err.println(n.toString() + ": can not be parsed");
+            System.err.println(n.toString() + ": can not be parsed");
         }
 
         //处理value
@@ -1935,7 +1941,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 target = filterSquareBracket(target) + "[][]";
             } else {
                 parsedFlag = false;
-                //System.err.println(n.toString() + " can not be parsed");
+                System.err.println(n.toString() + " can not be parsed");
             }
         } else {
             type = class_variable.get(target);
@@ -1970,10 +1976,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     } else {
                         setNodeMethod(node, "Null", "Null");
                     }
-                    addNode(node);
+                    addNode(n.toString(),node);
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n + " can not be parsed");
+                    System.err.println(n + " can not be parsed");
                 }
                 verifyFlag = false;
             } else if (n.getValue() instanceof CastExpr) {
@@ -2010,14 +2016,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     if(right instanceof MethodCallExpr){
                         dealMethodExpr((MethodCallExpr)right,node);
                         if(!node.getCompleteClassName().equals("userDefinedClass")){
-                            addNode(node);
+                            addNode(n.toString(),node);
                             flag = false;
                             break;
                         }
                     }else if(right instanceof FieldAccessExpr){
                         dealFieldAccessExpr((FieldAccessExpr)right,node);
                         if(!node.getCompleteClassName().equals("userDefinedClass")){
-                            addNode(node);
+                            addNode(n.toString(),node);
                             flag = false;
                             break;
                         }
@@ -2037,7 +2043,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         String constant = handleConstant(n.getValue().toString());
                         setNodeMethod(node, constant, constant);
                     }
-                    addNode(node);
+                    addNode(n.toString(),node);
                     verifyFlag = false;
                 }
             }
@@ -2055,12 +2061,12 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     String constant = handleConstant(n.getValue().toString());
                     setNodeMethod(node, constant, constant);
                 }
-                addNode(node);
+                addNode(n.toString(),node);
                 verifyFlag = false;
             }
             if (!verifyFlag && !verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
             }
         }
 
@@ -2076,20 +2082,20 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 setNodeClassAndMethod(node, class_variable.get(n.getScope().toString()), class_name_map.get(class_variable.get(n.getScope().toString())), n.getField().toString(), n.getField().toString());
                 if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyFieldAccess(node)) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                 }
             } else if ((class_variable.get(n.getScope().toString()) == null && class_name_map.get(n.getScope().toString()) != null) ||
                     (class_variable.get(n.getScope().toString()) != null && !getVariableType(n.getScope().toString(), true).contains("[]"))) {
                 setNodeClassAndMethod(node, n.getScope().toString(), class_name_map.get(n.getScope().toString()), n.getField().toString(), n.getField().toString());
                 if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyFieldAccess(node)) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                 }
             } else if (class_name_map.get(n.getScope().toString()) != null) {
                 setNodeClassAndMethod(node, n.getScope().toString(), class_name_map.get(n.getScope().toString()), n.getField().toString(), n.getField().toString());
                 if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyFieldAccess(node)) {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                 }
             } else if (class_variable.get(n.getScope().toString() + "[]") != null) {
                 String type = getVariableType(class_variable.get(n.getScope().toString() + "[]"), false);
@@ -2101,7 +2107,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     setNodeClassAndMethod(node, type, completeType, n.getField().toString(), n.getField().toString());
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n.getField() + " " + "can not be parsed");
+                    System.err.println(n.getField() + " " + "can not be parsed");
                 }
             } else if (class_variable.get(n.getScope().toString() + "[][]") != null) {
                 String type = getVariableType(class_variable.get(n.getScope().toString() + "[][]"), false);
@@ -2113,7 +2119,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     setNodeClassAndMethod(node, type, completeType, n.getField().toString(), n.getField().toString());
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n.getField() + " " + "can not be parsed");
+                    System.err.println(n.getField() + " " + "can not be parsed");
                 }
             } else {
                 String type = getVariableType(class_variable.get(n.getScope().toString()), true);
@@ -2124,11 +2130,11 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         setNodeClassAndMethod(node, type, completeType, n.getField().toString(), n.getField().toString());
                     } else {
                         parsedFlag = false;
-                        //System.err.println(n.getField() + " " + "can not be parsed");
+                        System.err.println(n.getField() + " " + "can not be parsed");
                     }
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + " " + "can not be parsed");
+                    System.err.println(n.toString() + " " + "can not be parsed");
                 }
             }
             if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
@@ -2144,7 +2150,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             list = dealContinuedMethodCall(expression, ((MethodCallExpr) expression).getName(), list, node);
             if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyMethodNameAndParameter(node, list)) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
             } else if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
                 returnType = getMethodReturnType(node);
                 dealLastFieldOfFieldAccess(n, node);
@@ -2160,7 +2166,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else {
             setNodeClassAndMethod(node, "", "", "", "");
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         node.setControl(false);
         node.setExit(false);
@@ -2207,7 +2213,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         } else {
             parsedFlag = false;
-            //System.err.println(n + " " + "can not be parsed");
+            System.err.println(n + " " + "can not be parsed");
         }
         node.setControl(false);
         node.setExit(false);
@@ -2216,7 +2222,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else {
             if (!verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
                 parsedFlag = false;
-                //System.err.println(n.toString() + ": can not be parsed");
+                System.err.println(n.toString() + ": can not be parsed");
             }
         }
     }
@@ -2226,7 +2232,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         int methodCallNumber = countMethodCallNumber(expression);
         if (methodCallNumber > 2) {
             parsedFlag = false;
-            //System.err.println(n.toString() + ": can not be parsed");
+            System.err.println(n.toString() + ": can not be parsed");
         } else {
             Expression expr = n.getScope();
             List<Expression> list = n.getArgs();
@@ -2239,24 +2245,24 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     if (!node.getCompleteClassName().equals("userDefinedClass")) {
                         if (!verifyMethodNameAndParameterOfTwoCalls(node, list)) {
                             parsedFlag = false;
-                            //System.err.println(n.toString() + ": can not be parsed");
+                            System.err.println(n.toString() + ": can not be parsed");
                         }
                     }
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                 }
             } else {
                 if (node.getCompleteClassName() != null) {
                     if (!node.getCompleteClassName().equals("userDefinedClass")) {
                         if (!verifyMethodNameAndParameter(node, list)) {
                             parsedFlag = false;
-                            //System.err.println(n.toString() + ": can not be parsed");
+                            System.err.println(n.toString() + ": can not be parsed");
                         }
                     }
                 } else {
                     parsedFlag = false;
-                    //System.err.println(n.toString() + ": can not be parsed");
+                    System.err.println(n.toString() + ": can not be parsed");
                 }
             }
         }
@@ -2383,7 +2389,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     if (((BinaryExpr) args.get(i)).getOperator().toString().equals("times") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("divide")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("remainder")) {
                         parsedFlag = false;
-                        //System.err.println(args.get(i) + " " + "can not be parsed");
+                        System.err.println(args.get(i) + " " + "can not be parsed");
                     } else if (((BinaryExpr) args.get(i)).getOperator().toString().equals("less") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("lessEquals")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("greater") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("greaterEquals")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("equals") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("notEquals")) {
@@ -2434,8 +2440,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         TreeNode assignNew = new TreeNode();
                         assignNew.setAddMethodName(false);
                         setNodeClassAndMethod(assignNew, "AssignNew", "AssignNew", "", "");
-                        addNode(assignNew);
-                        addNode(node);
+                        addNode("",assignNew);
+                        addNode(n.toString(),node);
                     }
                     String methodReturnType = getMethodReturnType(node);
                     if (methodReturnType != null && methodReturnType.contains(".")) {
@@ -2455,8 +2461,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         TreeNode assignNew = new TreeNode();
                         assignNew.setAddMethodName(false);
                         setNodeClassAndMethod(assignNew, "AssignNew", "AssignNew", "", "");
-                        addNode(assignNew);
-                        addNode(node);
+                        addNode("",assignNew);
+                        addNode(n.toString(),node);
                     }
                     String methodReturnType = getMethodReturnType(node);
                     if (methodReturnType != null && methodReturnType.contains(".")) {
@@ -2510,7 +2516,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     if (((BinaryExpr) args.get(i)).getOperator().toString().equals("times") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("divide")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("remainder")) {
                         parsedFlag = false;
-                        //System.err.println(args.get(i) + " " + "can not be parsed");
+                        System.err.println(args.get(i) + " " + "can not be parsed");
                     } else if (((BinaryExpr) args.get(i)).getOperator().toString().equals("less") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("lessEquals")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("greater") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("greaterEquals")
                             || ((BinaryExpr) args.get(i)).getOperator().toString().equals("equals") || ((BinaryExpr) args.get(i)).getOperator().toString().equals("notEquals")) {
@@ -2601,7 +2607,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             class_variable.replace(variable, type);
         } else {
             parsedFlag = false;
-            //System.err.println("null exception");
+            System.err.println("null exception");
         }
     }
 
@@ -2620,7 +2626,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         } else {
             parsedFlag = false;
-            //System.err.println( "variable type  can not be parsed");
+            System.err.println( "variable type  can not be parsed");
         }
         return type;
     }
@@ -2920,11 +2926,11 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } catch (Exception e) {
             if (!(e instanceof ClassNotFoundException)) {
                 parsedFlag = false;
-                //System.err.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
         } catch (Error e) {
             parsedFlag = false;
-            //System.err.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return false;
     }
@@ -3028,13 +3034,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (lastNode.getCompleteClassName() != null) {
             if (!lastNode.getCompleteClassName().equals("break") && !lastNode.getCompleteClassName().equals("continue")
                     && !lastNode.getCompleteClassName().equals("return")) {
-                codeTree.addNode(lastNode, endNode);
+                codeTree.addNode("",lastNode, endNode);
             }
         }
     }
 
-    protected void addNode(TreeNode node) {
-        codeTree.addNode(lastNode, node);
+    protected void addNode(String key, TreeNode node) {
+        codeTree.addNode(key, lastNode, node);
         lastNode = node;
     }
 }
