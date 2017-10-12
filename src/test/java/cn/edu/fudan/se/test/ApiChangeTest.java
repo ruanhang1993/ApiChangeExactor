@@ -2,28 +2,40 @@ package cn.edu.fudan.se.test;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Set;
-
 import org.junit.Test;
 
 import cn.edu.fudan.se.apiChangeExtractor.ApiChangeExtractor;
+import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
 
 public class ApiChangeTest {
 	String repositoryPath1 = "D:/javaee/parser/ApiChangeExtractor";
 	String repositoryPath2 = "D:/github/ChangeExtractor";
-	ApiChangeExtractor apiExactor = new ApiChangeExtractor(repositoryPath1);
+	ApiChangeExtractor apiExtractor = new ApiChangeExtractor(repositoryPath1);
 	@Test
 	public void testExtractApiChange(){
-		apiExactor.extractApiChange();
+		apiExtractor.extractApiChange();
 	}
 	@Test
 	public void testConstructData(){
-		Map<String, Set<String>> jdkCall = apiExactor.constructData(new File("D:/ApiChangeExtractor.java"));
+		Map<Integer, JdkSequence> jdkCall = apiExtractor.constructData(new File("D:/ApiChangeExtractor.java"));
 		if(jdkCall==null) return;
-		for(String s : jdkCall.keySet()){
-			System.out.println(s+"//"+jdkCall.get(s));
+		int count = 0;
+		for(Integer i : jdkCall.keySet()){
+			count++;
+			JdkSequence j = jdkCall.get(i);
+			System.out.println(i+"//"+j.getStmt());
+			for(String s: j.getApiList()){
+				System.out.print("|| "+s+"  ");
+			}
+			System.out.println();
 		}
+		System.out.println(count);
 		while(true){}
+	}
+	
+	@Test
+	public void testExtractApiChangeByDiff(){
+		apiExtractor.extractApiChangeByDiff();
 	}
 }
 

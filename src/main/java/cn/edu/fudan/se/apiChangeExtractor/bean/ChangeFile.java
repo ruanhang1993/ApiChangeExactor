@@ -1,5 +1,8 @@
 package cn.edu.fudan.se.apiChangeExtractor.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jgit.lib.ObjectId;
 
 public class ChangeFile {
@@ -10,6 +13,7 @@ public class ChangeFile {
 	private String parentCommitId;
 	private ObjectId newBlobId;
 	private ObjectId oldBlobId;
+	private List<ChangeLine> changeLines;
 	public ChangeFile(String changeType, String oldPath, String newPath, String commitId, String parentCommitId, ObjectId newBlobId, ObjectId oldBlobId){
 		this.changeType=changeType;
 		this.commitId=oldPath;
@@ -18,8 +22,17 @@ public class ChangeFile {
 		this.parentCommitId=parentCommitId;
 		this.newBlobId = newBlobId;
 		this.oldBlobId = oldBlobId;
+		changeLines = new ArrayList<ChangeLine>();
 	}
 	
+	public List<ChangeLine> getChangeLines() {
+		return changeLines;
+	}
+
+	public void setChangeLines(List<ChangeLine> changeLines) {
+		this.changeLines = changeLines;
+	}
+
 	public ObjectId getNewBlobId() {
 		return newBlobId;
 	}

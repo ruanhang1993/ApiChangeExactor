@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
+
 public class CodeTree{
 
     private TreeNode root;
@@ -15,14 +17,14 @@ public class CodeTree{
     private Map<String, String> class_variable = new HashMap<String, String>();
     private List<String> class_variable_list = new ArrayList<>();
     private Map<String, String> class_name_map = new HashMap<>();
-    private Map<String, Set<String>> jdkCall = new HashMap<>();
+    private Map<Integer, JdkSequence> jdkCall = new HashMap<>();
 
     
-    public Map<String, Set<String>> getJdkCall() {
+    public Map<Integer, JdkSequence> getJdkCall() {
 		return jdkCall;
 	}
 
-	public void setJdkCall(Map<String, Set<String>> jdkCall) {
+	public void setJdkCall(Map<Integer, JdkSequence> jdkCall) {
 		this.jdkCall = jdkCall;
 	}
 
@@ -75,7 +77,7 @@ public class CodeTree{
         root = null;
     }
 
-    public void addNode(String key, TreeNode node, TreeNode newNode) { // first parameter
+    public void addNode(String key, TreeNode node, TreeNode newNode, int line) { // first parameter
         // "node" is the
         // node that will to
         // be the parent of
@@ -89,11 +91,12 @@ public class CodeTree{
             newNode.setParentNode(node);
         }
         if((!"".equals(key)) && (newNode!=null)){
-    		if(jdkCall.get(key)!=null){
-    			jdkCall.get(key).add(newNode.getCompleteMethodDeclaration());
+    		if(jdkCall.get(line)!=null){
+    			jdkCall.get(line).getApiList().add(newNode.getCompleteMethodDeclaration());
     		}else{
-    			jdkCall.put(key, new HashSet<String>());
-    			jdkCall.get(key).add(newNode.getCompleteMethodDeclaration());
+    			JdkSequence j = new JdkSequence(line, key);
+    			j.getApiList().add(newNode.getCompleteMethodDeclaration());
+    			jdkCall.put(line, j);
     		}
     	}
     }
@@ -188,7 +191,6 @@ public class CodeTree{
                         tempList.add(node.getChildNodes().get(j));
                     }
                 }
-
             }
             nodeList.removeAll(nodeList);
             nodeList = tempList;

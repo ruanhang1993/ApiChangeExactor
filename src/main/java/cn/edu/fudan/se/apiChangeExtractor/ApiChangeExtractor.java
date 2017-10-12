@@ -26,21 +26,94 @@ import java.util.UUID;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
+import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
+import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
+import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
 import cn.edu.fudan.se.apiChangeExtractor.changedistiller.ChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
 
 public class ApiChangeExtractor {
+	private static final Logger logger = LoggerFactory.getLogger(ApiChangeExtractor.class);  
 	private GitReader gitReader;
 	private ChangeExtractor changeExactor;
 	public ApiChangeExtractor(String path){
 		changeExactor = new ChangeExtractor();
 		gitReader = new GitReader(path);
 	}
-	
+	public void extractApiChangeByDiff(){
+		String userDirPath = System.getProperty("user.dir");
+		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
+		File tempDir = new File(tempDirPath);
+		tempDir.mkdirs();
+		List<RevCommit> commits = gitReader.getCommits();
+		for(RevCommit commit : commits){
+			System.out.println("="+commit.getName()+"===========================================================================================================================================");
+			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
+			for(ChangeFile changeFile : changeFiles){
+				System.out.println("******************************************************************************************************************************************************");
+				System.out.println("+++>"+changeFile.getNewPath());
+				
+				byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
+				byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
+				String randomString = UUID.randomUUID().toString();
+				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
+				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+				Map<Integer, JdkSequence> newJdkCall = constructData(newFile);
+				Map<Integer, JdkSequence> oldJdkCall = constructData(oldFile);
+				System.out.println("new-------------------------------------------------------");
+				if(newJdkCall!=null)
+					for(Integer i : newJdkCall.keySet()){
+						JdkSequence j = newJdkCall.get(i);
+						System.out.println(i+"//"+j.getStmt());
+						for(String s: j.getApiList()){
+							System.out.print("|| "+s+"  ");
+						}
+						System.out.println();
+					}
+				System.out.println("old-------------------------------------------------------");
+				if(oldJdkCall!=null)
+					for(Integer i : oldJdkCall.keySet()){
+						JdkSequence j = oldJdkCall.get(i);
+						System.out.println(i+"//"+j.getStmt());
+						for(String s: j.getApiList()){
+							System.out.print("|| "+s+"  ");
+						}
+						System.out.println();
+					}
+				System.out.println("----------------------------------------------------------");
+				for(ChangeLine line : changeFile.getChangeLines()){
+					if(GitReader.ADD.equals(line.getType())){
+						matchChangeAndApi(line, newJdkCall, changeFile);
+					}else{
+						matchChangeAndApi(line, oldJdkCall, changeFile);
+					}
+				}
+				newFile.delete();
+				oldFile.delete();
+			}
+		}
+		tempDir.delete();
+	}
+	public void matchChangeAndApi(ChangeLine line, Map<Integer, JdkSequence> jdkCall,ChangeFile changeFile){
+		System.out.println(line.getType()+line.getLineNum()+"-> "+line.getSequence());
+		if(jdkCall==null) return;
+		JdkSequence sequence = jdkCall.get(line.getLineNum());
+		if(sequence!=null){
+			for(String s: sequence.getApiList()){
+				System.out.print(s+" || ");
+			}
+			System.out.println();
+		}
+	}
 	public void extractApiChange(){
 		String userDirPath = System.getProperty("user.dir");
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
@@ -48,36 +121,63 @@ public class ApiChangeExtractor {
 		tempDir.mkdirs();
 		List<RevCommit> commits = gitReader.getCommits();
 		for(RevCommit commit : commits){
-			System.out.println("***************************************************************************");
+			System.out.println("=======================================================================================================================================================");
 			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
 			for(ChangeFile changeFile : changeFiles){
 				if(DiffEntry.ChangeType.MODIFY.toString().equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
-					System.out.println("===============================================");
+					System.out.println("******************************************************************************************************************************************************");
 					System.out.println(changeFile.getNewPath());
-					byte[] newContent = gitReader.getFileByObjectId(changeFile.getNewBlobId());
-					byte[] oldContent = gitReader.getFileByObjectId(changeFile.getOldBlobId());
+					byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
+					byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
 					String randomString = UUID.randomUUID().toString();
 					File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 					File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
 					List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
-					for(SourceCodeChange change:changes){
-						System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
+					if(changes.size()>0){
+						Map<Integer, JdkSequence> jdkCall = constructData(newFile);
+						matchChangeAndApi(changes, jdkCall);
 					}
-					Map<String, Set<String>> jdkCall = constructData(newFile);
-					if(jdkCall!=null){
-						for(String s : jdkCall.keySet()){
-							System.out.println(s+"//"+jdkCall.get(s));
-						}
-					}
-					while(true){}
-//					newFile.delete();
-//					oldFile.delete();
+					newFile.delete();
+					oldFile.delete();
 				}
 			}
 		}
 		tempDir.delete();
 	}
-	public Map<String, Set<String>> constructData(File file){
+	public void matchChangeAndApi(List<SourceCodeChange> changes, Map<Integer, JdkSequence> jdkCall) {
+		if(jdkCall==null){
+			for(SourceCodeChange change:changes){
+				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
+			}
+		}else{
+			for(SourceCodeChange change:changes){
+				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
+				if(change instanceof Update){
+					matchUpdate((Update) change, jdkCall);
+				}else if(change instanceof Move){
+					matchMove((Move) change, jdkCall);	
+				}else if(change instanceof Insert){
+					matchInsert((Insert) change, jdkCall);
+				}else{
+					matchDelete((Delete) change, jdkCall);
+				}
+			}
+		}
+	}
+	public void matchUpdate(Update change, Map<Integer, JdkSequence> jdkCall){
+		
+	}
+	public void matchMove(Move change,Map<Integer, JdkSequence> jdkCall){
+		
+	}
+	public void matchInsert(Insert change, Map<Integer, JdkSequence> jdkCall){
+		
+	}
+	public void matchDelete(Delete change, Map<Integer, JdkSequence> jdkCall){
+		
+	}
+
+	public Map<Integer, JdkSequence> constructData(File file){
         JapaAst japaAst = new JapaAst(true);
         List<String> tempList = new ArrayList<>();
         CompilationUnit cu = null;

@@ -188,7 +188,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             if (str.equals("//hole")) {
                 TreeNode node = new TreeNode();
                 node.setCompleteMethodDeclaration("//hole");
-                addNode(n.toString(),node);
+                addNode(n.toString(),node,n.getBeginLine());
             }
         }
         return codeTree;
@@ -200,7 +200,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "break", "break", "", "");
         node.setAddMethodName(false);
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
         lastNode = node;
         return codeTree;
     }
@@ -211,7 +211,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "continue", "continue", "", "");
         node.setAddMethodName(false);
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
 
         lastNode = node;
         return codeTree;
@@ -223,13 +223,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "doWhile", "doWhile", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode("",lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode,-1);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -304,13 +304,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 setNodeClassAndMethod(node, "foreach", "foreach", "", "");
                 node.setControl(true);
                 node.setExit(false);
-                codeTree.addNode("",lastNode, node);
+                codeTree.addNode("",lastNode, node,-1);
                 //add condition node
                 lastNode = node;
                 TreeNode conditionNode = new TreeNode();
                 setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
                 conditionNode.setAddMethodName(false);
-                codeTree.addNode("",lastNode, conditionNode);
+                codeTree.addNode("",lastNode, conditionNode,-1);
                 lastNode = conditionNode;
                 // deal with the condition in for each
             /*deal with variable declaration on the left of ":"*/
@@ -318,7 +318,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 convert(n.getVariable());
                 if (tempNode.equals(lastNode)) {
                     TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                    addNode(n.toString(),temp);
+                    addNode(n.toString(),temp,n.getBeginLine());
                 }
                 lastNode.setCondition(true);
                 temporaryVariable = class_variable_list.get(class_variable_list.size() - 1);
@@ -327,7 +327,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 colonNode.setCondition(true);
                 setNodeClassAndMethod(colonNode, ":", ":", "", "");
                 colonNode.setAddMethodName(false);
-                codeTree.addNode("",lastNode, colonNode);
+                codeTree.addNode("",lastNode, colonNode,-1);
                 lastNode = colonNode;
             /*deal with the variable on the right of ":"*/
                 dealForEachAndSwitchIterable(n.getIterable());
@@ -371,14 +371,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "for", "for", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
 
         // add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode("",lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode,-1);
         lastNode = conditionNode;
         List<String> variableList = new ArrayList<>();
         //deal with condition in for
@@ -389,7 +389,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(semicolonNode, ";", ";", "", "");
         semicolonNode.setCondition(true);
         semicolonNode.setAddMethodName(false);
-        codeTree.addNode("",conditionNode, semicolonNode);
+        codeTree.addNode("",conditionNode, semicolonNode,-1);
         lastNode = semicolonNode;
         /*deal with compare*/
         if (n.getCompare() != null) {
@@ -399,7 +399,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode("",lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode,-1);
             lastNode = emptyNode;
         }
         /*add second ";"*/
@@ -407,7 +407,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(secondSemicolonNode, ";", ";", "", "");
         secondSemicolonNode.setCondition(true);
         secondSemicolonNode.setAddMethodName(false);
-        codeTree.addNode("",conditionNode, secondSemicolonNode);
+        codeTree.addNode("",conditionNode, secondSemicolonNode,-1);
         lastNode = secondSemicolonNode;
         /*deal with update*/
         if (n.getUpdate() != null) {
@@ -418,7 +418,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     setNodeClassAndMethod(commaNode, ",", ",", "", "");
                     commaNode.setCondition(true);
                     commaNode.setAddMethodName(false);
-                    codeTree.addNode("",lastNode, commaNode);
+                    codeTree.addNode("",lastNode, commaNode,-1);
                     lastNode = commaNode;
                 }
                 dealCondition(n.getUpdate().get(i), lastNode);
@@ -428,7 +428,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode("",lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode,-1);
             lastNode = emptyNode;
         }
         // add end node
@@ -481,13 +481,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
             }
         }
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode("",lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode,-1);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -571,7 +571,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "return", "return", "", "");
         node.setAddMethodName(false);
         node.setExit(true);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
 
         lastNode = node;
         return codeTree;
@@ -590,14 +590,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode tryNode = new TreeNode();
         setNodeClassAndMethod(tryNode, "try", "try", "", "");
         tryNode.setControl(true);
-        codeTree.addNode("",lastNode, tryNode);
+        codeTree.addNode("",lastNode, tryNode,-1);
         //get the body of try node
         if (n.getResources().size() == 0) {
             if (n.getTryBlock().getChildrenNodes().size() == 0 || isAllAnnotationStmt(n.getTryBlock().getChildrenNodes())) {
                 TreeNode tryStmtNode = new TreeNode();
                 setNodeClassAndMethod(tryStmtNode, "EmptyStatement", "EmptyStatement", "", "");
                 tryStmtNode.setAddMethodName(false);
-                codeTree.addNode("",tryNode, tryStmtNode);
+                codeTree.addNode("",tryNode, tryStmtNode,-1);
                 lastNode = tryStmtNode;
             } else {
                 lastNode = tryNode;
@@ -611,21 +611,21 @@ public class SimplifiedTreeCreator extends TreeConverter {
             TreeNode catchStmtNode = new TreeNode();
             setNodeClassAndMethod(catchStmtNode, "EmptyStatement", "EmptyStatement", "", "");
             catchStmtNode.setAddMethodName(false);
-            codeTree.addNode("",catchNode, catchStmtNode);
-            codeTree.addNode("",lastNode, catchNode);
+            codeTree.addNode("",catchNode, catchStmtNode,-1);
+            codeTree.addNode("",lastNode, catchNode,-1);
             // add finally node if exits
             lastNode = catchNode;
             if (n.getFinallyBlock() != null) {
                 TreeNode finallyNode = new TreeNode();
                 setNodeClassAndMethod(finallyNode, "finally", "finally", "", "");
                 finallyNode.setControl(true);
-                codeTree.addNode("",lastNode, finallyNode);
+                codeTree.addNode("",lastNode, finallyNode,-1);
                 lastNode = finallyNode;
                 if (n.getFinallyBlock().getChildrenNodes().size() == 0 || isAllAnnotationStmt(n.getFinallyBlock().getChildrenNodes())) {
                     TreeNode finallyStmtNode = new TreeNode();
                     setNodeClassAndMethod(finallyStmtNode, "EmptyStatement", "EmptyStatement", "", "");
                     finallyStmtNode.setAddMethodName(false);
-                    codeTree.addNode("",finallyNode, finallyStmtNode);
+                    codeTree.addNode("",finallyNode, finallyStmtNode,-1);
                     lastNode = finallyStmtNode;
                 } else {
                     toCodeTree(n.getFinallyBlock());
@@ -661,13 +661,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(node, "while", "while", "", "");
         node.setControl(true);
         node.setExit(false);
-        codeTree.addNode("",lastNode, node);
+        codeTree.addNode("",lastNode, node,-1);
         //add condition node
         lastNode = node;
         TreeNode conditionNode = new TreeNode();
         setNodeClassAndMethod(conditionNode, "condition", "condition", "", "");
         conditionNode.setAddMethodName(false);
-        codeTree.addNode("",lastNode, conditionNode);
+        codeTree.addNode("",lastNode, conditionNode,-1);
         lastNode = conditionNode;
         dealCondition(n.getCondition(), conditionNode);
         //add end node to represent the end of condition
@@ -712,14 +712,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode switchNode = new TreeNode();
         setNodeClassAndMethod(switchNode, "switch", "switch", "", "");
         switchNode.setControl(true);
-        codeTree.addNode("",lastNode, switchNode);
+        codeTree.addNode("",lastNode, switchNode,-1);
         //deal condition in switch
         /*add condition node*/
         lastNode = switchNode;
         TreeNode switchConditionNode = new TreeNode();
         setNodeClassAndMethod(switchConditionNode, "condition", "condition", "", "");
         switchConditionNode.setAddMethodName(false);
-        codeTree.addNode("",lastNode, switchConditionNode);
+        codeTree.addNode("",lastNode, switchConditionNode,-1);
         lastNode = switchConditionNode;
         /*deal condition*/
         dealForEachAndSwitchIterable(n.getSelector());
@@ -793,7 +793,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 if (codeTree.getHoleNode() == null) {
                     TreeNode node = new TreeNode();
                     node.setCompleteMethodDeclaration("//hole");
-                    addNode(stmt.toString(),node);
+                    addNode(stmt.toString(),node,stmt.getBeginLine());
                 }
             }
             toCodeTree(stmt);
@@ -886,16 +886,16 @@ public class SimplifiedTreeCreator extends TreeConverter {
                                 if(right instanceof MethodCallExpr){
                                     dealMethodExpr((MethodCallExpr)right,node);
                                     if(!node.getCompleteClassName().equals("userDefinedClass")){
-                                        addNode("",assignNew);
-                                        addNode(n.toString(),node);
+                                        addNode("",assignNew,-1);
+                                        addNode(n.toString(),node,n.getBeginLine());
                                         flag = false;
                                         break;
                                     }
                                 }else if(right instanceof FieldAccessExpr){
                                     dealFieldAccessExpr((FieldAccessExpr)right,node);
                                     if(!node.getCompleteClassName().equals("userDefinedClass")){
-                                        addNode("",assignNew);
-                                        addNode(n.toString(),node);
+                                        addNode("",assignNew,-1);
+                                        addNode(n.toString(),node,n.getBeginLine());
                                         flag = false;
                                         break;
                                     }
@@ -905,14 +905,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                                 String constant = handleConstant(n.getVars().get(i).getInit().toString());
                                 type += constant + preserveSquareBracket(type1);
                                 setNodeMethod(node, type, type);
-                                addNode(n.toString(),node);
+                                addNode(n.toString(),node,n.getBeginLine());
                                 verifyFlag = false;
                             }
                         } else if (n.getVars().get(i).getInit().getChildrenNodes().size() == 0 && !n.getVars().get(i).getInit().toString().contains("{")) {//this condition is equivalent the condition "n.getVars().get(0).getInit() instanceof IntegerExpr || DoubleExpr"
                             String constant = handleConstant(n.getVars().get(i).getInit().toString());
                             type += constant + preserveSquareBracket(type1);
                             setNodeMethod(node, type, type);
-                            addNode(n.toString(),node);
+                            addNode(n.toString(),node,n.getBeginLine());
                             verifyFlag = false;
                         } else if (n.getVars().get(i).getInit() instanceof MethodCallExpr) {
                             MethodCallExpr expr = (MethodCallExpr) n.getVars().get(i).getInit();
@@ -921,7 +921,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             assignNewNode.setCondition(false);
                             assignNewNode.setExit(false);
                             setNodeClassAndMethod(assignNewNode, "AssignNew", "AssignNew", "", "");
-                            codeTree.addNode("",lastNode, assignNewNode);
+                            codeTree.addNode("",lastNode, assignNewNode,-1);
                             lastNode = assignNewNode;
                             TreeNode methodNode = new TreeNode();
                             dealMethodExpr(expr, methodNode);
@@ -931,9 +931,9 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
                             if (userClassProcessing.isUserClassProcessing(methodNode.getCompleteClassName())) {
                                 setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                addNode(n.toString(),node);
+                                addNode(n.toString(),node,n.getBeginLine());
                             } else {
-                                addNode(n.toString(),methodNode);
+                                addNode(n.toString(),methodNode,n.getBeginLine());
                             }
                             //verifyFlag = false;
                         } else if (n.getVars().get(i).getInit() instanceof ObjectCreationExpr) {
@@ -958,13 +958,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             if (!userClassProcessing.isUserClassProcessing(arrayAccessNode.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(arrayAccessNode, arrayAccessNode.getClassName())) {
                                 parsedFlag = false;
                                 System.err.println(n.toString() + ": can not be parsed");
-                                addNode(n.toString(),arrayAccessNode);
+                                addNode(n.toString(),arrayAccessNode,n.getBeginLine());
                                 return null;
                             } else if (!userClassProcessing.isUserClassProcessing(arrayAccessNode.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(arrayAccessNode, arrayAccessNode.getClassName())) {
-                                addNode(n.toString(),arrayAccessNode);
+                                addNode(n.toString(),arrayAccessNode,n.getBeginLine());
                             } else {
                                 setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                addNode(n.toString(),node);
+                                addNode(n.toString(),node,n.getBeginLine());
                                 verifyFlag = false;
                             }
                             dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
@@ -986,21 +986,21 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             assignNewNode.setCondition(false);
                             assignNewNode.setExit(false);
                             setNodeClassAndMethod(assignNewNode, "AssignNew", "AssignNew", "", "");
-                            codeTree.addNode("",lastNode, assignNewNode);
+                            codeTree.addNode("",lastNode, assignNewNode,-1);
                             lastNode = assignNewNode;
                             TreeNode fieldNode = new TreeNode();
                             dealFieldAccessExpr(expr, fieldNode);
                             if (fieldNode.getCompleteClassName() != null) {
                                 if (!userClassProcessing.isUserClassProcessing(fieldNode.getCompleteClassName()) && !(fieldNode.getCompleteClassName().contains("[]"))) {
                                     returnType = getMethodReturnType(fieldNode);
-                                    addNode(n.toString(),fieldNode);
+                                    addNode(n.toString(),fieldNode,n.getBeginLine());
                                 } else if (userClassProcessing.isUserClassProcessing(fieldNode.getCompleteClassName())) {
                                     returnType = "userDefinedClass";
                                     setNodeClassAndMethod(node, node.getClassName(), node.getCompleteClassName(), "Declaration", "Declaration");
-                                    addNode(n.toString(),node);
+                                    addNode(n.toString(),node,n.getBeginLine());
                                 } else {
                                     returnType = "int";//represent the return type of String[].length,int[].length etc..
-                                    addNode(n.toString(),fieldNode);
+                                    addNode(n.toString(),fieldNode,n.getBeginLine());
                                 }
                                 dealMethodReturnType(n.getVars().get(i).getId().toString(), returnType);
                                 //verifyFlag = false;
@@ -1013,7 +1013,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             String constant = handleConstant(n.getVars().get(i).getInit().toString());
                             type += constant + preserveSquareBracket(type1);
                             setNodeMethod(node, type, type);
-                            addNode(n.toString(),node);
+                            addNode(n.toString(),node,n.getBeginLine());
                             verifyFlag = false;
                         }
                         returnType = null;
@@ -1024,7 +1024,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         } else {
                             setNodeMethod(node, "Null", "Null");
                         }
-                        addNode(n.toString(),node);
+                        addNode(n.toString(),node,n.getBeginLine());
                         verifyFlag = false;
                     }
                 } else {
@@ -1033,7 +1033,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     } else {
                         setNodeMethod(node, "Declaration", "Declaration");
                     }
-                    addNode(n.toString(),node);
+                    addNode(n.toString(),node,n.getBeginLine());
                     verifyFlag = false;
                 }
                 if (!verifyFlag && !userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
@@ -1054,7 +1054,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         dealMethodExpr(n, node);
         //addNode(node);
         if (node.getCompleteClassName() != null && !node.getCompleteClassName().equals("userDefinedClass")) {
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
             returnType = getMethodReturnType(node);
             //System.out.println(n.toString());
 //            addToJdkCall(n.toString(),lastNode);
@@ -1104,7 +1104,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
         }
         return codeTree;
     }
@@ -1137,7 +1137,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
         }
         return codeTree;
     }
@@ -1150,7 +1150,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             System.err.println(n.toString() + ": can not be parsed");
             return null;
         } else if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
         } else if (userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
             // nothing to do
         }
@@ -1170,7 +1170,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 System.err.println(n.toString() + ": can not be parsed");
                 return null;
             }
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
         }
         return codeTree;
     }
@@ -1204,7 +1204,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     System.err.println(n.toString() + ": can not be parsed");
                     return null;
                 }
-                addNode(n.toString(),node);
+                addNode(n.toString(),node,n.getBeginLine());
             }
         }
         return codeTree;
@@ -1217,12 +1217,12 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (node.getCompleteClassName() != null) {
             if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName()) && !(node.getCompleteClassName().contains("[]"))) {
                 returnType = getMethodReturnType(node);
-                addNode(n.toString(),node);
+                addNode(n.toString(),node,n.getBeginLine());
             } else if (userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
                 returnType = "userDefinedClass";
             } else {
                 returnType = "int";//represent the return type of String[].length,int[].length etc..
-                addNode(n.toString(),node);
+                addNode(n.toString(),node,n.getBeginLine());
             }
         } else {
             parsedFlag = false;
@@ -1235,7 +1235,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode node = new TreeNode();
         dealUnaryExpr(n, node);
         if (!userClassProcessing.isUserClassProcessing(node.getCompleteClassName())) {
-            addNode(n.toString(),node);
+            addNode(n.toString(),node,n.getBeginLine());
         }
         return codeTree;
     }
@@ -1278,7 +1278,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         commaNode.setCondition(true);
                         setNodeClassAndMethod(commaNode, ",", ",", "", "");
                         commaNode.setAddMethodName(false);
-                        codeTree.addNode("",lastNode, commaNode);
+                        codeTree.addNode("",lastNode, commaNode,-1);
                         lastNode = commaNode;
                     }
                     dealCondition(n.getInit().get(i), lastNode);
@@ -1292,7 +1292,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     convert(expr);
                     if (node.equals(lastNode)) {
                         TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                        addNode(n.toString(),temp);
+                        addNode(n.toString(),temp,n.getBeginLine());
                     }
                     lastNode.setCondition(true);
                     variableList.add(class_variable_list.get(class_variable_list.size() - 1));
@@ -1304,7 +1304,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                             commaNode.setCondition(true);
                             setNodeClassAndMethod(commaNode, ",", ",", "", "");
                             commaNode.setAddMethodName(false);
-                            codeTree.addNode("",lastNode, commaNode);
+                            codeTree.addNode("",lastNode, commaNode,-1);
                             lastNode = commaNode;
                         }
                         VariableDeclarationExpr singleVariableDeclarationExpr = new VariableDeclarationExpr();
@@ -1316,7 +1316,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         convert(singleVariableDeclarationExpr);
                         if (node.equals(lastNode)) {
                             TreeNode temp = userClassProcessing.createVariableDeclarationNode();
-                            addNode(n.toString(),temp);
+                            addNode(n.toString(),temp,n.getBeginLine());
                         }
                         lastNode.setCondition(true);
                         variableList.add(class_variable_list.get(class_variable_list.size() - 1));
@@ -1331,7 +1331,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             setNodeClassAndMethod(emptyNode, "EmptyCondition", "EmptyCondition", "", "");
             emptyNode.setAddMethodName(false);
             emptyNode.setCondition(true);
-            codeTree.addNode("",lastNode, emptyNode);
+            codeTree.addNode("",lastNode, emptyNode,-1);
             lastNode = emptyNode;
         }
     }
@@ -1371,7 +1371,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 } else if (getOperator(operator).equals("||")) {
                     setNodeClassAndMethod(operatorNode, "||", "||", "", "");
                 }
-                codeTree.addNode("",node, operatorNode);
+                codeTree.addNode("",node, operatorNode,-1);
                 lastNode = operatorNode;
                 //处理right expression
                 Expression right = ((BinaryExpr) n).getRight();
@@ -1396,7 +1396,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             currentNode.setCondition(true);
             String constant = handleConstant(n.toString());
             setNodeClassAndMethod(currentNode, constant, constant, "", "");
-            codeTree.addNode("",lastNode, currentNode);
+            codeTree.addNode("",lastNode, currentNode,-1);
             lastNode = currentNode;
         } else if (n instanceof AssignExpr) {
             dealAssignCondition(n, node);
@@ -1418,7 +1418,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         bracketNode.setAddMethodName(false);
         bracketNode.setCondition(true);
         setNodeClassAndMethod(bracketNode, bracket, bracket, "", "");
-        codeTree.addNode("",node, bracketNode);
+        codeTree.addNode("",node, bracketNode,-1);
         lastNode = bracketNode;
     }
 
@@ -1434,7 +1434,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             } else {
                 setNodeClassAndMethod(castNode, type, class_name_map.get(type), "Cast", "Cast");
             }
-            codeTree.addNode(n.toString(),node, castNode);
+            codeTree.addNode(n.toString(),node, castNode,n.getBeginLine());
             lastNode = castNode;
         } else {
             parsedFlag = false;
@@ -1460,7 +1460,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         equalNode.setAddMethodName(false);
         equalNode.setCondition(true);
         setNodeClassAndMethod(equalNode, operator, operator, "", "");
-        codeTree.addNode("",lastNode, equalNode);
+        codeTree.addNode("",lastNode, equalNode,-1);
         lastNode = equalNode;
         //处理value
         dealCondition(expr.getValue(), lastNode);
@@ -1474,10 +1474,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
             parsedFlag = false;
             System.err.println(n.toString() + ": can not be parsed");
         } else if (!userClassProcessing.isUserClassProcessing(newNode.getCompleteClassName()) && verifyMethodNameAndParameterOfSpecial(newNode, newNode.getClassName())) {
-            addNode(n.toString(),newNode);
+            addNode(n.toString(),newNode,n.getBeginLine());
         } else if (userClassProcessing.isUserClassProcessing(newNode.getCompleteClassName())) {
             TreeNode userNode = userClassProcessing.createArrayAccessExprNode();
-            addNode(n.toString(),userNode);
+            addNode(n.toString(),userNode,n.getBeginLine());
         }
     }
 
@@ -1510,7 +1510,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                 type = "userDefinedClass";
             }
             setNodeClassAndMethod(nameNode, type, type, "", "");
-            codeTree.addNode("",node, nameNode);
+            codeTree.addNode("",node, nameNode,-1);
             lastNode = nameNode;
         } else {
             System.err.println(n + " " + "can not be parsed");
@@ -1525,37 +1525,37 @@ public class SimplifiedTreeCreator extends TreeConverter {
         unaryNode.setAddMethodName(false);
         if (expr.getOperator().toString().equals("not")) {//!
             setNodeClassAndMethod(unaryNode, "!", "!", "", "");
-            codeTree.addNode("",node, unaryNode);
+            codeTree.addNode("",node, unaryNode,-1);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("posIncrement")) {//后++
             dealCondition(expr.getExpr(), node);
             setNodeClassAndMethod(unaryNode, "++", "++", "", "");
-            codeTree.addNode("",lastNode, unaryNode);
+            codeTree.addNode("",lastNode, unaryNode,-1);
             lastNode = unaryNode;
         } else if (expr.getOperator().toString().equals("preIncrement")) {//前++
             setNodeClassAndMethod(unaryNode, "++", "++", "", "");
-            codeTree.addNode("",node, unaryNode);
+            codeTree.addNode("",node, unaryNode,-1);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("posDecrement")) {//后--
             dealCondition(expr.getExpr(), node);
             setNodeClassAndMethod(unaryNode, "--", "--", "", "");
-            codeTree.addNode("",lastNode, unaryNode);
+            codeTree.addNode("",lastNode, unaryNode,-1);
             lastNode = unaryNode;
         } else if (expr.getOperator().toString().equals("preDecrement")) {//前--
             setNodeClassAndMethod(unaryNode, "--", "--", "", "");
-            codeTree.addNode("",node, unaryNode);
+            codeTree.addNode("",node, unaryNode,-1);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("positive")) {//+
             setNodeClassAndMethod(unaryNode, "+", "+", "", "");
-            codeTree.addNode("",node, unaryNode);
+            codeTree.addNode("",node, unaryNode,-1);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else if (expr.getOperator().toString().equals("negative")) {//-
             setNodeClassAndMethod(unaryNode, "-", "-", "", "");
-            codeTree.addNode("",node, unaryNode);
+            codeTree.addNode("",node, unaryNode,-1);
             lastNode = unaryNode;
             dealCondition(expr.getExpr(), unaryNode);
         } else {
@@ -1582,7 +1582,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
             parsedFlag = false;
         }
         setNodeClassAndMethod(booleanNode, n.toString(), n.toString(), "", "");
-        codeTree.addNode(n.toString(),node, booleanNode);
+        codeTree.addNode(n.toString(),node, booleanNode,n.getBeginLine());
         lastNode = booleanNode;
     }
 
@@ -1591,7 +1591,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         TreeNode conditionContentNode = new TreeNode();
         conditionContentNode.setCondition(true);
         dealMethodExpr(expr, conditionContentNode);
-        codeTree.addNode(n.toString(),node, conditionContentNode);
+        codeTree.addNode(n.toString(),node, conditionContentNode,n.getBeginLine());
         lastNode = conditionContentNode;
     }
 
@@ -1617,7 +1617,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         setNodeClassAndMethod(operatorNode, ope, ope, "", "");
         operatorNode.setAddMethodName(false);
         operatorNode.setCondition(true);
-        codeTree.addNode("",lastNode, operatorNode);
+        codeTree.addNode("",lastNode, operatorNode,-1);
         lastNode = operatorNode;
         // add right node
         rightNode.setCondition(true);
@@ -1691,19 +1691,19 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else if (n instanceof NullLiteralExpr) {
             currentNode.setAddMethodName(false);
             setNodeClassAndMethod(currentNode, "null", "null", "", "");
-            codeTree.addNode("",parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode,-1);
             lastNode = currentNode;
         } else if (n instanceof FieldAccessExpr) {
             FieldAccessExpr expr = (FieldAccessExpr) n;
             dealFieldAccessExpr(expr, currentNode);
-            codeTree.addNode(n.toString(),parentNode, currentNode);
+            codeTree.addNode(n.toString(),parentNode, currentNode,n.getBeginLine());
             lastNode = currentNode;
         } else if (n instanceof StringLiteralExpr || n instanceof IntegerLiteralExpr
                 || n instanceof CharLiteralExpr || n instanceof DoubleLiteralExpr) {
             currentNode.setAddMethodName(false);
             String constant = handleConstant(n.toString());
             setNodeClassAndMethod(currentNode, constant, constant, "", "");
-            codeTree.addNode("",parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode,-1);
             lastNode = currentNode;
         } else if (n instanceof BooleanLiteralExpr) {
             dealBooleanLiteralCondition(n, parentNode);
@@ -1712,7 +1712,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
         } else if (n instanceof ArrayAccessExpr) {
             currentNode.setAddMethodName(false);
             setNodeClassAndMethod(currentNode, "arrayAccess", "arrayAccess", "", "");
-            codeTree.addNode("",parentNode, currentNode);
+            codeTree.addNode("",parentNode, currentNode,-1);
             lastNode = currentNode;
         } else if (n instanceof CastExpr) {
             dealCastCondition(n, parentNode);
@@ -1895,23 +1895,23 @@ public class SimplifiedTreeCreator extends TreeConverter {
         assignNode.setAddMethodName(false);
         if (n.getOperator().toString().equals("minus")) {
             setNodeClassAndMethod(assignNode, "MinusAssign", "MinusAssign", "", "");
-            codeTree.addNode("",lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode,-1);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("plus")) {
             setNodeClassAndMethod(assignNode, "PlusAssign", "PlusAssign", "", "");
-            codeTree.addNode("",lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode,-1);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("assign")) {
             setNodeClassAndMethod(assignNode, "Assign", "Assign", "", "");
-            codeTree.addNode("",lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode,-1);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("star")) {
             setNodeClassAndMethod(assignNode, "StarAssign", "StarAssign", "", "");
-            codeTree.addNode("",lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode,-1);
             lastNode = assignNode;
         } else if (n.getOperator().toString().equals("slash")) {
             setNodeClassAndMethod(assignNode, "SlashAssign", "SlashAssign", "", "");
-            codeTree.addNode("",lastNode, assignNode);
+            codeTree.addNode("",lastNode, assignNode,-1);
             lastNode = assignNode;
         } else {
             parsedFlag = false;
@@ -1976,7 +1976,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     } else {
                         setNodeMethod(node, "Null", "Null");
                     }
-                    addNode(n.toString(),node);
+                    addNode(n.toString(),node,n.getBeginLine());
                 } else {
                     parsedFlag = false;
                     System.err.println(n + " can not be parsed");
@@ -2016,14 +2016,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     if(right instanceof MethodCallExpr){
                         dealMethodExpr((MethodCallExpr)right,node);
                         if(!node.getCompleteClassName().equals("userDefinedClass")){
-                            addNode(n.toString(),node);
+                            addNode(n.toString(),node,n.getBeginLine());
                             flag = false;
                             break;
                         }
                     }else if(right instanceof FieldAccessExpr){
                         dealFieldAccessExpr((FieldAccessExpr)right,node);
                         if(!node.getCompleteClassName().equals("userDefinedClass")){
-                            addNode(n.toString(),node);
+                            addNode(n.toString(),node,n.getBeginLine());
                             flag = false;
                             break;
                         }
@@ -2043,7 +2043,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         String constant = handleConstant(n.getValue().toString());
                         setNodeMethod(node, constant, constant);
                     }
-                    addNode(n.toString(),node);
+                    addNode(n.toString(),node,n.getBeginLine());
                     verifyFlag = false;
                 }
             }
@@ -2061,7 +2061,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     String constant = handleConstant(n.getValue().toString());
                     setNodeMethod(node, constant, constant);
                 }
-                addNode(n.toString(),node);
+                addNode(n.toString(),node,n.getBeginLine());
                 verifyFlag = false;
             }
             if (!verifyFlag && !verifyMethodNameAndParameterOfSpecial(node, node.getClassName())) {
@@ -2440,8 +2440,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         TreeNode assignNew = new TreeNode();
                         assignNew.setAddMethodName(false);
                         setNodeClassAndMethod(assignNew, "AssignNew", "AssignNew", "", "");
-                        addNode("",assignNew);
-                        addNode(n.toString(),node);
+                        addNode("",assignNew,-1);
+                        addNode(n.toString(),node,n.getBeginLine());
                     }
                     String methodReturnType = getMethodReturnType(node);
                     if (methodReturnType != null && methodReturnType.contains(".")) {
@@ -2461,8 +2461,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
                         TreeNode assignNew = new TreeNode();
                         assignNew.setAddMethodName(false);
                         setNodeClassAndMethod(assignNew, "AssignNew", "AssignNew", "", "");
-                        addNode("",assignNew);
-                        addNode(n.toString(),node);
+                        addNode("",assignNew,-1);
+                        addNode(n.toString(),node,n.getBeginLine());
                     }
                     String methodReturnType = getMethodReturnType(node);
                     if (methodReturnType != null && methodReturnType.contains(".")) {
@@ -3034,13 +3034,13 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (lastNode.getCompleteClassName() != null) {
             if (!lastNode.getCompleteClassName().equals("break") && !lastNode.getCompleteClassName().equals("continue")
                     && !lastNode.getCompleteClassName().equals("return")) {
-                codeTree.addNode("",lastNode, endNode);
+                codeTree.addNode("",lastNode, endNode,-1);
             }
         }
     }
 
-    protected void addNode(String key, TreeNode node) {
-        codeTree.addNode(key, lastNode, node);
+    protected void addNode(String key, TreeNode node,int line) {
+        codeTree.addNode(key, lastNode, node,line);
         lastNode = node;
     }
 }
