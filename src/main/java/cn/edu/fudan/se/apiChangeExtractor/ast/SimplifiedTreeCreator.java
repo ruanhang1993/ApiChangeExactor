@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor;
+package cn.edu.fudan.se.apiChangeExtractor.ast;
 
 import japa.parser.ast.Node;
 import japa.parser.ast.body.MethodDeclaration;
@@ -1056,9 +1056,6 @@ public class SimplifiedTreeCreator extends TreeConverter {
         if (node.getCompleteClassName() != null && !node.getCompleteClassName().equals("userDefinedClass")) {
             addNode(n.toString(),node,n.getBeginLine());
             returnType = getMethodReturnType(node);
-            //System.out.println(n.toString());
-//            addToJdkCall(n.toString(),lastNode);
-           // System.out.println(codeTree.getJdkCall().size());
         }
         return codeTree;
 

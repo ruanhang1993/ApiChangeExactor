@@ -2,10 +2,12 @@ package cn.edu.fudan.se.test;
 
 import java.io.File;
 import java.util.Map;
+
 import org.junit.Test;
 
 import cn.edu.fudan.se.apiChangeExtractor.ApiChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
+import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
 
 public class ApiChangeTest {
 	String repositoryPath1 = "D:/javaee/parser/ApiChangeExtractor";
@@ -24,8 +26,8 @@ public class ApiChangeTest {
 			count++;
 			JdkSequence j = jdkCall.get(i);
 			System.out.println(i+"//"+j.getStmt());
-			for(String s: j.getApiList()){
-				System.out.print("|| "+s+"  ");
+			for(MethodCall s: j.getApiList()){
+				System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
 			}
 			System.out.println();
 		}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.fudan.se.apiChangeExtractor.mybatis.mapper.ApichangeMapper">
+	<resultMap id="apichange" type="Apichange">
+		<id property="apichangeId" column="apichange_id" />
+		<result property="repositoryId" column="repository_id" />
+		<result property="commitId" column="commit_id" />
+		<result property="parentCommitId" column="parent_commit_id" />
+		<result property="newFileName" column="new_file_name" />
+		<result property="oldFileName" column="old_file_name"/>
+		<result property="lineNumber" column="line_number" />
+		<result property="changeType" column="change_type" />
+		<result property="content" column="content" />
+		<result property="completeClassName" column="complete_class_name" />
+		<result property="methodName" column="method_name" />
+		<result property="parameter" column="parameter" />
+	</resultMap>
+	
+	<insert id="insertApichange"  useGeneratedKeys="true" keyProperty="apichangeId" parameterType="Apichange">
+		INSERT INTO apichange (repository_id, commit_id, parent_commit_id, new_file_name, old_file_name, line_number, change_type, content, complete_class_name, method_name, parameter) 
+		VALUES (#{repositoryId}, #{commitId}, #{parentCommitId}, #{newFileName}, #{oldFileName}, #{lineNumber}, #{changeType}, #{content}, #{completeClassName}, #{methodName}, #{parameter})
+    </insert>
+    <insert id="insertApichangeList" useGeneratedKeys="true" keyProperty="apichangeId" parameterType="Apichange">
+    	INSERT INTO apichange (repository_id, commit_id, parent_commit_id, new_file_name, old_file_name, line_number, change_type, content, complete_class_name, method_name, parameter) 
+		VALUES 
+		<foreach collection ="list" item="item" index= "index" separator =",">
+			(#{item.repositoryId}, #{item.commitId}, #{item.parentCommitId}, #{item.newFileName}, #{item.oldFileName}, #{item.lineNumber}, #{item.changeType}, #{item.content}, #{item.completeClassName}, #{item.methodName}, #{item.parameter})
+ 		</foreach> 
+	</insert>  
+</mapper>
+    

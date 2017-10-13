@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor;
+package cn.edu.fudan.se.apiChangeExtractor.ast;
 import java.util.Enumeration;
 
 import javax.swing.JTree;

@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor;
+package cn.edu.fudan.se.apiChangeExtractor.ast;
 
 
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
+import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
 
 public class CodeTree{
 
@@ -92,10 +93,12 @@ public class CodeTree{
         }
         if((!"".equals(key)) && (newNode!=null)){
     		if(jdkCall.get(line)!=null){
-    			jdkCall.get(line).getApiList().add(newNode.getCompleteMethodDeclaration());
+    			MethodCall mc = new MethodCall(newNode.getCompleteClassName(), newNode.getCompleteMethodName());
+    			jdkCall.get(line).getApiList().add(mc);
     		}else{
     			JdkSequence j = new JdkSequence(line, key);
-    			j.getApiList().add(newNode.getCompleteMethodDeclaration());
+    			MethodCall mc = new MethodCall(newNode.getCompleteClassName(), newNode.getCompleteMethodName());
+    			j.getApiList().add(mc);
     			jdkCall.put(line, j);
     		}
     	}

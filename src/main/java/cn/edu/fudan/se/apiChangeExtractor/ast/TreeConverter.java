@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor;
+package cn.edu.fudan.se.apiChangeExtractor.ast;
 
 import japa.parser.ast.Node;
 import japa.parser.ast.body.AnnotationDeclaration;

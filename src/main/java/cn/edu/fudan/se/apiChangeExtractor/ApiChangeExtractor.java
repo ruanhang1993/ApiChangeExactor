@@ -34,9 +34,16 @@ import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
+import cn.edu.fudan.se.apiChangeExtractor.ast.CodeTree;
+import cn.edu.fudan.se.apiChangeExtractor.ast.DisplayTreeView;
+import cn.edu.fudan.se.apiChangeExtractor.ast.JapaAst;
+import cn.edu.fudan.se.apiChangeExtractor.ast.SimplifiedTreeCreator;
+import cn.edu.fudan.se.apiChangeExtractor.ast.TreeView;
+import cn.edu.fudan.se.apiChangeExtractor.ast.UserClassProcessing;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
+import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
 import cn.edu.fudan.se.apiChangeExtractor.changedistiller.ChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
@@ -61,7 +68,6 @@ public class ApiChangeExtractor {
 			for(ChangeFile changeFile : changeFiles){
 				System.out.println("******************************************************************************************************************************************************");
 				System.out.println("+++>"+changeFile.getNewPath());
-				
 				byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
 				byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
 				String randomString = UUID.randomUUID().toString();
@@ -74,8 +80,8 @@ public class ApiChangeExtractor {
 					for(Integer i : newJdkCall.keySet()){
 						JdkSequence j = newJdkCall.get(i);
 						System.out.println(i+"//"+j.getStmt());
-						for(String s: j.getApiList()){
-							System.out.print("|| "+s+"  ");
+						for(MethodCall s: j.getApiList()){
+							System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
 						}
 						System.out.println();
 					}
@@ -84,8 +90,8 @@ public class ApiChangeExtractor {
 					for(Integer i : oldJdkCall.keySet()){
 						JdkSequence j = oldJdkCall.get(i);
 						System.out.println(i+"//"+j.getStmt());
-						for(String s: j.getApiList()){
-							System.out.print("|| "+s+"  ");
+						for(MethodCall s: j.getApiList()){
+							System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
 						}
 						System.out.println();
 					}
@@ -108,8 +114,8 @@ public class ApiChangeExtractor {
 		if(jdkCall==null) return;
 		JdkSequence sequence = jdkCall.get(line.getLineNum());
 		if(sequence!=null){
-			for(String s: sequence.getApiList()){
-				System.out.print(s+" || ");
+			for(MethodCall s: sequence.getApiList()){
+				System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
 			}
 			System.out.println();
 		}

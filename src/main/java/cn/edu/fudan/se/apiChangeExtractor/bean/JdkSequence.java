@@ -6,11 +6,11 @@ import java.util.Set;
 public class JdkSequence {
 	private int lineNum;
 	private String stmt;
-	private Set<String> apiList;
+	private Set<MethodCall> apiList;
 	public JdkSequence(int lineNum, String stmt){
 		this.lineNum = lineNum;
 		this.stmt = stmt;
-		this.apiList = new HashSet<String>(); 
+		this.apiList = new HashSet<MethodCall>(); 
 	}
 	public int getLineNum() {
 		return lineNum;
@@ -24,10 +24,10 @@ public class JdkSequence {
 	public void setStmt(String stmt) {
 		this.stmt = stmt;
 	}
-	public Set<String> getApiList() {
+	public Set<MethodCall> getApiList() {
 		return apiList;
 	}
-	public void setApiList(Set<String> apiList) {
+	public void setApiList(Set<MethodCall> apiList) {
 		this.apiList = apiList;
 	}
 	
