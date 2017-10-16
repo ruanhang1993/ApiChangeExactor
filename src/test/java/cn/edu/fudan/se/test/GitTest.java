@@ -8,7 +8,8 @@ import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 public class GitTest {
 	String repositoryPath1 = "D:/javaee/parser/ApiChangeExactor";
 	String repositoryPath2 = "D:/github/ChangeExtractor";
-	GitReader reader = new GitReader(repositoryPath1);
+	String repositoryPath3 = "D:/github/spring-framework";
+	GitReader reader = new GitReader(repositoryPath3);
 	@Test
 	public void testGetLastCommit(){
 		RevCommit last = reader.getLastCommit();

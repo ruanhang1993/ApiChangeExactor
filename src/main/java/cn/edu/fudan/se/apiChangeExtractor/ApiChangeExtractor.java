@@ -82,7 +82,7 @@ public class ApiChangeExtractor {
 				break;
 		}
 		for(;count<commits.size(); count++){
-			if(commits.get(count).getParents().length==0) return;
+			if(commits.get(count).getParents().length==0) continue;
 			System.out.println(count+"===="+commits.get(count).getName()+"=======================================================================================================================================");
 			System.out.println(count+"----"+commits.get(count).getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
 			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commits.get(count));
@@ -92,10 +92,19 @@ public class ApiChangeExtractor {
 				String randomString = UUID.randomUUID().toString();
 				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
-				System.out.println("new ***>"+changeFile.getNewPath());
-				Map<Integer, JdkSequence> newJdkCall = constructData(newFile);
-				System.out.println("old ***>"+changeFile.getOldPath());
-				Map<Integer, JdkSequence> oldJdkCall = constructData(oldFile);
+				Map<Integer, JdkSequence> newJdkCall = null;
+				Map<Integer, JdkSequence> oldJdkCall = null;
+				try{
+					System.out.println("new ***>"+changeFile.getNewPath());
+					newJdkCall = constructData(newFile);
+					System.out.println("old ***>"+changeFile.getOldPath());
+					oldJdkCall = constructData(oldFile);
+				}catch(Exception e){
+					logger.info("repository "+repositoryId+"/commit: "+commits.get(count).getName()+" debug:");
+					logger.info(e.getMessage());
+					e.printStackTrace();
+				}
+				
 				for(ChangeLine line : changeFile.getChangeLines()){
 					if(GitReader.ADD.equals(line.getType())){
 						matchChangeAndApi(line, newJdkCall, changeFile);
@@ -119,7 +128,7 @@ public class ApiChangeExtractor {
 		List<RevCommit> commits = gitReader.getCommits();
 		int count = 0;
 		for(RevCommit commit : commits){
-			if(commits.get(count).getParents().length==0) return;
+			if(commits.get(count).getParents().length==0) continue;
 			System.out.println(count+"===="+commit.getName()+"=======================================================================================================================================");
 			System.out.println(count+"----"+commit.getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
 			count++;
@@ -139,7 +148,7 @@ public class ApiChangeExtractor {
 					System.out.println("old ***>"+changeFile.getOldPath());
 					oldJdkCall = constructData(oldFile);
 				}catch(Exception e){
-					logger.info("repository "+repositoryId+" debug:");
+					logger.info("repository "+repositoryId+"/commit: "+commit.getName()+" debug:");
 					logger.info(e.getMessage());
 					e.printStackTrace();
 				}

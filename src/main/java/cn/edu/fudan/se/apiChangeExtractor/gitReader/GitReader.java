@@ -60,8 +60,12 @@ public class GitReader {
 		try {
 			Iterable<RevCommit> commits = git.log().call();
 			allCommits = new ArrayList<RevCommit>();
+			int count = 0;
 			for(RevCommit commit : commits){
+				if(commit.getParentCount()==0)
+					System.out.println(count+"/"+commit.getName());
 				allCommits.add(commit);
+				count++;
 			}
 		} catch (NoHeadException e) {
 			e.printStackTrace();
@@ -145,7 +149,7 @@ public class GitReader {
 					range.clear();
 					range.addAll(tempRange);
 				}else {
-					if(range.size()==0||range.size()==2){
+					if(range.size()!=4){
 						continue;
 					}
 					if(range.get(1)==0&&range.get(3)==0){

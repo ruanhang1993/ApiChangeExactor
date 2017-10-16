@@ -45,7 +45,7 @@ public class ApiChangeTest {
 	
 	@Test
 	public void testExtractApiChangeByDiffAfterCommit(){
-		apiExtractor3.extractApiChangeByDiffAfterCommit("61cdc842e08f468c8aec9d10a900f3ba087f348e");
+		apiExtractor3.extractApiChangeByDiffAfterCommit("70c28a0bc5b35e9851a4ee3b757729df74fe3eb2");
 	}
 }
 
