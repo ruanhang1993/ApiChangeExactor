@@ -142,6 +142,7 @@ public class GitReader {
             inputStream = new BufferedReader(new InputStreamReader(new FileInputStream(fName),"UTF-8"));
             ArrayList<Integer> range = new ArrayList<>();
             boolean go = false;
+            
 			while((str = inputStream.readLine()) != null){
 				ArrayList<Integer> tempRange = getRange(str);
 				if(tempRange.size()>0){
