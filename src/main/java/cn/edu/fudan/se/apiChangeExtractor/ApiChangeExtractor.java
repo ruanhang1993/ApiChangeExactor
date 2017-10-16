@@ -15,13 +15,11 @@ import japa.parser.ast.stmt.ExpressionStmt;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jgit.diff.DiffEntry;
@@ -44,58 +42,60 @@ import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
 import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
+import cn.edu.fudan.se.apiChangeExtractor.bean.Repository;
 import cn.edu.fudan.se.apiChangeExtractor.changedistiller.ChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Apichange;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.dao.ApichangeDao;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
 
 public class ApiChangeExtractor {
-	private static final Logger logger = LoggerFactory.getLogger(ApiChangeExtractor.class);  
+	private static final Logger logger = LoggerFactory.getLogger(ApiChangeExtractor.class);
+	
 	private GitReader gitReader;
 	private ChangeExtractor changeExactor;
-	public ApiChangeExtractor(String path){
+	private int repositoryId;
+	private ApichangeDao dao;
+	
+	public ApiChangeExtractor(String path, int repositoryId){
 		changeExactor = new ChangeExtractor();
 		gitReader = new GitReader(path);
+		this.repositoryId = repositoryId;
+		dao = new ApichangeDao();
 	}
-	public void extractApiChangeByDiff(){
+	public ApiChangeExtractor(Repository repository){
+		changeExactor = new ChangeExtractor();
+		gitReader = new GitReader(repository.getLocalAddress());
+		repositoryId = repository.getRepositoryId();
+		dao = new ApichangeDao();
+	}
+	
+	public void extractApiChangeByDiffAfterCommit(String sha){
 		String userDirPath = System.getProperty("user.dir");
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
 		List<RevCommit> commits = gitReader.getCommits();
-		for(RevCommit commit : commits){
-			System.out.println("="+commit.getName()+"===========================================================================================================================================");
-			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
+		int count = 0;
+		for(;count<commits.size(); count++){
+			if(commits.get(count).getName().equals(sha))
+				break;
+		}
+		for(;count<commits.size(); count++){
+			if(commits.get(count).getParents().length==0) return;
+			System.out.println(count+"===="+commits.get(count).getName()+"=======================================================================================================================================");
+			System.out.println(count+"----"+commits.get(count).getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
+			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commits.get(count));
 			for(ChangeFile changeFile : changeFiles){
-				System.out.println("******************************************************************************************************************************************************");
-				System.out.println("+++>"+changeFile.getNewPath());
 				byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
 				byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
 				String randomString = UUID.randomUUID().toString();
 				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+				System.out.println("new ***>"+changeFile.getNewPath());
 				Map<Integer, JdkSequence> newJdkCall = constructData(newFile);
+				System.out.println("old ***>"+changeFile.getOldPath());
 				Map<Integer, JdkSequence> oldJdkCall = constructData(oldFile);
-				System.out.println("new-------------------------------------------------------");
-				if(newJdkCall!=null)
-					for(Integer i : newJdkCall.keySet()){
-						JdkSequence j = newJdkCall.get(i);
-						System.out.println(i+"//"+j.getStmt());
-						for(MethodCall s: j.getApiList()){
-							System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
-						}
-						System.out.println();
-					}
-				System.out.println("old-------------------------------------------------------");
-				if(oldJdkCall!=null)
-					for(Integer i : oldJdkCall.keySet()){
-						JdkSequence j = oldJdkCall.get(i);
-						System.out.println(i+"//"+j.getStmt());
-						for(MethodCall s: j.getApiList()){
-							System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
-						}
-						System.out.println();
-					}
-				System.out.println("----------------------------------------------------------");
 				for(ChangeLine line : changeFile.getChangeLines()){
 					if(GitReader.ADD.equals(line.getType())){
 						matchChangeAndApi(line, newJdkCall, changeFile);
@@ -109,15 +109,79 @@ public class ApiChangeExtractor {
 		}
 		tempDir.delete();
 	}
-	public void matchChangeAndApi(ChangeLine line, Map<Integer, JdkSequence> jdkCall,ChangeFile changeFile){
-		System.out.println(line.getType()+line.getLineNum()+"-> "+line.getSequence());
+	
+	public void extractApiChangeByDiff(){
+		System.out.println("repository "+repositoryId+" start extractor*****************************************************************************************************");
+		String userDirPath = System.getProperty("user.dir");
+		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
+		File tempDir = new File(tempDirPath);
+		tempDir.mkdirs();
+		List<RevCommit> commits = gitReader.getCommits();
+		int count = 0;
+		for(RevCommit commit : commits){
+			if(commits.get(count).getParents().length==0) return;
+			System.out.println(count+"===="+commit.getName()+"=======================================================================================================================================");
+			System.out.println(count+"----"+commit.getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
+			count++;
+			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
+			for(ChangeFile changeFile : changeFiles){
+				byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
+				byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
+				String randomString = UUID.randomUUID().toString();
+				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
+				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+				
+				Map<Integer, JdkSequence> newJdkCall = null;
+				Map<Integer, JdkSequence> oldJdkCall = null;
+				try{
+					System.out.println("new ***>"+changeFile.getNewPath());
+					newJdkCall = constructData(newFile);
+					System.out.println("old ***>"+changeFile.getOldPath());
+					oldJdkCall = constructData(oldFile);
+				}catch(Exception e){
+					logger.info("repository "+repositoryId+" debug:");
+					logger.info(e.getMessage());
+					e.printStackTrace();
+				}
+				
+				for(ChangeLine line : changeFile.getChangeLines()){
+					if(GitReader.ADD.equals(line.getType())){
+						matchChangeAndApi(line, newJdkCall, changeFile);
+					}else{
+						matchChangeAndApi(line, oldJdkCall, changeFile);
+					}
+				}
+				newFile.delete();
+				oldFile.delete();
+			}
+		}
+		tempDir.delete();
+		System.out.println("repository "+repositoryId+" end extractor*****************************************************************************************************");
+	}
+	public void matchChangeAndApi(ChangeLine line, Map<Integer, JdkSequence> jdkCall, ChangeFile changeFile){
+//		System.out.println(line.getType()+line.getLineNum()+"-> "+line.getSequence());
 		if(jdkCall==null) return;
+		
 		JdkSequence sequence = jdkCall.get(line.getLineNum());
 		if(sequence!=null){
 			for(MethodCall s: sequence.getApiList()){
-				System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
+				Apichange apichange = new Apichange();
+				apichange.setRepositoryId(repositoryId);
+				apichange.setCommitId(changeFile.getCommitId());
+				System.out.println(changeFile.getCommitId());
+				apichange.setParentCommitId(changeFile.getParentCommitId());
+				apichange.setNewFileName(changeFile.getNewPath());
+				apichange.setOldFileName(changeFile.getOldPath());
+				apichange.setLineNumber(line.getLineNum());
+				apichange.setChangeType(line.getType());
+				apichange.setContent(line.getSequence());
+				apichange.setCompleteClassName(s.getCompleteClassName());
+				apichange.setMethodName(s.getMethodName());
+				apichange.setParameter(s.getParameter());
+				dao.insertOneApichange(apichange);
+//				System.out.print("|| c="+s.getCompleteClassName()+" m="+s.getMethodName()+" p="+s.getParameter());
 			}
-			System.out.println();
+//			System.out.println();
 		}
 	}
 	public void extractApiChange(){
@@ -192,6 +256,7 @@ public class ApiChangeExtractor {
 	        tempList = japaAst.parse(cu);
 		} catch (ParseException e1) {
 			e1.printStackTrace();
+			return null;
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		} catch (Exception e) {
@@ -199,8 +264,10 @@ public class ApiChangeExtractor {
 		}
         
         //如果Import的包中带有*号，那么得到含有*号的这个import
+		if(cu==null) return null;
         List importList = cu.getImports();
         List<String> starImportStringList = new ArrayList<>();
+        try{
         if (importList != null) {
             for (int i = 0; i < importList.size(); i++) {
                 if (importList.get(i).toString().contains("*")) {
@@ -215,6 +282,12 @@ public class ApiChangeExtractor {
                 }
 
             }
+        }
+        }catch(Exception e){
+        	e.printStackTrace();
+        	return null;
+        }catch(Error e){
+        	e.printStackTrace();
         }
         //开始分析程序
         if (cu.getTypes() != null) {
@@ -260,7 +333,7 @@ public class ApiChangeExtractor {
                                     for (int i = 0; i < parameterList.size(); i++) {
                                         String contentString = "public class Test{public void test(){$}}";
                                         String parameterString = parameterList.get(i).toString() + ";";
-                                        contentString = contentString.replaceAll("\\$", parameterString);
+                                        contentString = contentString.replaceAll("\\$", java.util.regex.Matcher.quoteReplacement(parameterString));
                                         InputStream in = new ByteArrayInputStream(contentString.getBytes());
                                         try {
                                             CompilationUnit compilationUnit = JavaParser.parse(in);
@@ -314,7 +387,7 @@ public class ApiChangeExtractor {
                                         completeTypeMapList, starImportStringList, method, creator, userClassProcessing, true, "");
                                 if (codeTree != null && codeTree.getRoot() != null && codeTree.getTotalNumber() <= 1574) {
                     /*display the code tree*/
-                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
+//                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
                                     return codeTree.getJdkCall();
                                     //displayTree(codeTree,false);
                     /*store the code tree in mongodb*/

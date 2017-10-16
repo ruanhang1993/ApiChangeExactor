@@ -92,20 +92,28 @@ public class GitReader {
 				while(new File(fName).exists()){
 					fName = "aa"+(new Random()).nextInt(1000);
 				}
-				
+				BufferedOutputStream out =null;
 	            try {
-	            	BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fName));
-	                DiffFormatter df = new DiffFormatter(out);  
+	            	out = new BufferedOutputStream(new FileOutputStream(fName));
+	                DiffFormatter df = new DiffFormatter(out);
 	                df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
 	                df.setRepository(git.getRepository());
 	            	df.format(diffEntry);
 	            	out.flush();
-					out.close();
 				} catch (IOException e) {
 					e.printStackTrace();
+				}finally{
+					try {
+						if(out!=null)
+							out.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 	            
 	            insertAllAddAndDelete(commit.getName(),changeFiles.get(changeFiles.size()-1),fName);
+				File file = new File(fName);
+				file.delete();
 			}
 		} 
        return changeFiles;
@@ -124,9 +132,10 @@ public class GitReader {
 		
 	}
 	private void insertAllAddAndDelete(String name, ChangeFile changeFile, String fName) {
+		BufferedReader inputStream =null;
 		try {
         	String str;
-            BufferedReader inputStream = new BufferedReader(new InputStreamReader(new FileInputStream(fName),"UTF-8"));
+            inputStream = new BufferedReader(new InputStreamReader(new FileInputStream(fName),"UTF-8"));
             ArrayList<Integer> range = new ArrayList<>();
             boolean go = false;
 			while((str = inputStream.readLine()) != null){
@@ -136,7 +145,7 @@ public class GitReader {
 					range.clear();
 					range.addAll(tempRange);
 				}else {
-					if(range.size()==0){
+					if(range.size()==0||range.size()==2){
 						continue;
 					}
 					if(range.get(1)==0&&range.get(3)==0){
@@ -165,11 +174,15 @@ public class GitReader {
 					}
 				}
 			}
-			inputStream.close();
-			File file = new File(fName);
-			file.delete();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}finally{
+			try {
+				if(inputStream!=null)
+					inputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

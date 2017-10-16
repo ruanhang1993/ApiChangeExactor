@@ -2433,7 +2433,7 @@ public class SimplifiedTreeCreator extends TreeConverter {
                     TreeNode node = new TreeNode();
                     MethodCallExpr n = (MethodCallExpr) args.get(i);
                     dealMethodExpr(n, node);
-                    if(!node.getCompleteClassName().equals("userDefinedClass")) {
+                    if(!"userDefinedClass".equals(node.getCompleteClassName())) {
                         TreeNode assignNew = new TreeNode();
                         assignNew.setAddMethodName(false);
                         setNodeClassAndMethod(assignNew, "AssignNew", "AssignNew", "", "");

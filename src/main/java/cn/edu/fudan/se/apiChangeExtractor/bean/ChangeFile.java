@@ -16,9 +16,9 @@ public class ChangeFile {
 	private List<ChangeLine> changeLines;
 	public ChangeFile(String changeType, String oldPath, String newPath, String commitId, String parentCommitId, ObjectId newBlobId, ObjectId oldBlobId){
 		this.changeType=changeType;
-		this.commitId=oldPath;
+		this.commitId=commitId;
 		this.newPath=newPath;
-		this.oldPath=commitId;
+		this.oldPath=oldPath;
 		this.parentCommitId=parentCommitId;
 		this.newBlobId = newBlobId;
 		this.oldBlobId = oldBlobId;

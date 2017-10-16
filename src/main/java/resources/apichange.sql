@@ -1,3 +1,4 @@
+drop table if exists apichange;
 CREATE TABLE `apichange` (
    `apichange_id` int(11) NOT NULL AUTO_INCREMENT,
    `repository_id` int(11) DEFAULT NULL,
@@ -12,4 +13,4 @@ CREATE TABLE `apichange` (
    `method_name` varchar(255) DEFAULT NULL,
    `parameter` varchar(255) DEFAULT NULL,
    PRIMARY KEY (`apichange_id`)
- ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

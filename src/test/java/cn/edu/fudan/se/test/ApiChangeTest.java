@@ -11,15 +11,18 @@ import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
 
 public class ApiChangeTest {
 	String repositoryPath1 = "D:/javaee/parser/ApiChangeExtractor";
-	String repositoryPath2 = "D:/github/ChangeExtractor";
-	ApiChangeExtractor apiExtractor = new ApiChangeExtractor(repositoryPath1);
+	String repositoryPath2 = "D:/github/checkstyle";
+	String repositoryPath3 = "D:/github/spring-framework";
+	ApiChangeExtractor apiExtractor1 = new ApiChangeExtractor(repositoryPath1,-1);
+	ApiChangeExtractor apiExtractor2 = new ApiChangeExtractor(repositoryPath2,-2);
+	ApiChangeExtractor apiExtractor3 = new ApiChangeExtractor(repositoryPath3,-3);
 	@Test
 	public void testExtractApiChange(){
-		apiExtractor.extractApiChange();
+		apiExtractor1.extractApiChange();
 	}
 	@Test
 	public void testConstructData(){
-		Map<Integer, JdkSequence> jdkCall = apiExtractor.constructData(new File("D:/ApiChangeExtractor.java"));
+		Map<Integer, JdkSequence> jdkCall = apiExtractor1.constructData(new File("D:/ApiChangeExtractor.java"));
 		if(jdkCall==null) return;
 		int count = 0;
 		for(Integer i : jdkCall.keySet()){
@@ -37,7 +40,12 @@ public class ApiChangeTest {
 	
 	@Test
 	public void testExtractApiChangeByDiff(){
-		apiExtractor.extractApiChangeByDiff();
+		apiExtractor3.extractApiChangeByDiff();
+	}
+	
+	@Test
+	public void testExtractApiChangeByDiffAfterCommit(){
+		apiExtractor3.extractApiChangeByDiffAfterCommit("61cdc842e08f468c8aec9d10a900f3ba087f348e");
 	}
 }
 

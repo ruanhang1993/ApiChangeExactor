@@ -9,6 +9,11 @@ public class MethodCall {
 		deal(methodNameAndparameter);
 	}
 	public void deal(String s){
+		if(s ==null||"".equals(s)){
+			this.methodName = null;
+			this.parameter=null;
+			return;
+		}
 		String[] method = s.split("\\(|\\)");
 		if(method.length>2){
 			this.methodName = s;
