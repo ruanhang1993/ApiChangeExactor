@@ -18,7 +18,8 @@ public class ApiChangeTest {
 	ApiChangeExtractor apiExtractor3 = new ApiChangeExtractor(repositoryPath3,-3);
 	@Test
 	public void testExtractApiChange(){
-		apiExtractor1.extractApiChange();
+		apiExtractor2.extractApiChange();
+		apiExtractor3.extractApiChange();
 	}
 	@Test
 	public void testConstructData(){
@@ -40,12 +41,13 @@ public class ApiChangeTest {
 	
 	@Test
 	public void testExtractApiChangeByDiff(){
+//		apiExtractor2.extractApiChangeByDiff();
 		apiExtractor3.extractApiChangeByDiff();
 	}
 	
 	@Test
 	public void testExtractApiChangeByDiffAfterCommit(){
-		apiExtractor3.extractApiChangeByDiffAfterCommit("70c28a0bc5b35e9851a4ee3b757729df74fe3eb2");
+		apiExtractor3.extractApiChangeByDiffAfterCommit("f6d2fe471a26fb6ff5894480f50dd55365e62f06");
 	}
 }
 

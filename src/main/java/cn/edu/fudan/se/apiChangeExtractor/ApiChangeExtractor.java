@@ -126,13 +126,12 @@ public class ApiChangeExtractor {
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
 		List<RevCommit> commits = gitReader.getCommits();
-		int count = 0;
-		for(RevCommit commit : commits){
-			if(commits.get(count).getParents().length==0) continue;
-			System.out.println(count+"===="+commit.getName()+"=======================================================================================================================================");
-			System.out.println(count+"----"+commit.getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
-			count++;
-			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
+		for(int i = 0; i < commits.size(); i++){
+			if(commits.get(i).getParents().length==0) continue;
+			System.out.println(i+"===="+commits.get(i).getName()+"=======================================================================================================================================");
+			System.out.println(i+"----"+commits.get(i).getParent(0).getName()+"---------------------------------------------------------------------------------------------------------------------------------------");
+
+			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commits.get(i));
 			for(ChangeFile changeFile : changeFiles){
 				byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
 				byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
@@ -148,7 +147,7 @@ public class ApiChangeExtractor {
 					System.out.println("old ***>"+changeFile.getOldPath());
 					oldJdkCall = constructData(oldFile);
 				}catch(Exception e){
-					logger.info("repository "+repositoryId+"/commit: "+commit.getName()+" debug:");
+					logger.info("repository "+repositoryId+"/commit: "+commits.get(i).getName()+" debug:");
 					logger.info(e.getMessage());
 					e.printStackTrace();
 				}
