@@ -12,6 +12,12 @@ public class Repository {
    private Date addedDate;
    private String description;
 
+   public Repository(){
+   }
+   public Repository(Integer repositoryId, String localAddress){
+	   this.repositoryId = repositoryId;
+	   this.localAddress = localAddress;
+   }
    public Integer getRepositoryId() {
        return repositoryId;
    }

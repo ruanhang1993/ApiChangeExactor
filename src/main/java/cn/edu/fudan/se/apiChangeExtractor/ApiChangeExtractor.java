@@ -126,6 +126,7 @@ public class ApiChangeExtractor {
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
 		List<RevCommit> commits = gitReader.getCommits();
+		if(commits==null) return;
 		for(int i = 0; i < commits.size(); i++){
 			if(commits.get(i).getParents().length==0) continue;
 			System.out.println(i+"===="+commits.get(i).getName()+"=======================================================================================================================================");
