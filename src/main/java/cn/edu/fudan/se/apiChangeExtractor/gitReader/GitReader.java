@@ -99,7 +99,7 @@ public class GitReader {
 				BufferedOutputStream out =null;
 	            try {
 	            	out = new BufferedOutputStream(new FileOutputStream(fName));
-	                DiffFormatter df = new DiffFormatter(out);
+					DiffFormatter df = new DiffFormatter(out);
 	                df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
 	                df.setRepository(git.getRepository());
 	            	df.format(diffEntry);
