@@ -1,2 +1,5 @@
-Logger--> INFO{MyThreadPool.java:40}-repository: -1 finished
+Logger--> INFO{MyThreadPool.java:39}-repository: -1 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -2 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -3 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -4 finished
    

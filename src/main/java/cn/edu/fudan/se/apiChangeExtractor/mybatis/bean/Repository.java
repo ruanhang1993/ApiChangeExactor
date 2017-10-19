@@ -1,69 +1,73 @@
 package cn.edu.fudan.se.apiChangeExtractor.mybatis.bean;
 
-import java.util.Date;
+import cn.edu.fudan.se.apiChangeExtractor.util.PathUtils;
 
 public class Repository {
    private Integer repositoryId;
+   private String githubId;
    private String repositoryName;
-   private String gitAddress;
-   private String issueAddress;
-   private String localAddress;
-   private String license;
-   private Date addedDate;
-   private String description;
+   private String userId;
+   private String userName;
+   private String website;
+   private String stars;
+   private String address;
 
    public Repository(){
    }
-   public Repository(Integer repositoryId, String localAddress){
+   public Repository(int repositoryId, String address){
 	   this.repositoryId = repositoryId;
-	   this.localAddress = localAddress;
+	   this.address = address;
    }
-   public Integer getRepositoryId() {
-       return repositoryId;
-   }
-   public void setRepositoryId(Integer repositoryId) {
-       this.repositoryId = repositoryId;
-   }
-   public String getRepositoryName() {
-       return repositoryName;
-   }
-   public void setRepositoryName(String repositoryName) {
-       this.repositoryName = repositoryName;
-   }
-   public String getGitAddress() {
-       return gitAddress;
-   }
-   public void setGitAddress(String gitAddress) {
-       this.gitAddress = gitAddress;
-   }
-   public String getIssueAddress() {
-       return issueAddress;
-   }
-   public void setIssueAddress(String issueAddress) {
-       this.issueAddress = issueAddress;
-   }
-   public String getLocalAddress() {
-       return localAddress;
-   }
-   public void setLocalAddress(String localAddress) {
-       this.localAddress = localAddress;
-   }
-   public String getLicense() {
-       return license;
-   }
-   public void setLicense(String license) {
-       this.license = license;
-   }
-   public Date getAddedDate() {
-       return addedDate;
-   }
-   public void setAddedDate(Date addedDate) {
-       this.addedDate = addedDate;
-   }
-   public String getDescription() {
-       return description;
-   }
-   public void setDescription(String description) {
-       this.description = description;
-   }
+	public Integer getRepositoryId() {
+		return repositoryId;
+	}
+	public void setRepositoryId(Integer repositoryId) {
+		this.repositoryId = repositoryId;
+	}
+	public String getGithubId() {
+		return githubId;
+	}
+	public void setGithubId(String githubId) {
+		this.githubId = githubId;
+	}
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
+	}
+	public String getUserId() {
+		return userId;
+	}
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getWebsite() {
+		return website;
+	}
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+	public String getStars() {
+		return stars;
+	}
+	public void setStars(String stars) {
+		this.stars = stars;
+	}
+	public String getAddress() {
+		if(address!=null)
+			return address;
+		else 
+			return PathUtils.changeWebsite2Path(website);
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
 }

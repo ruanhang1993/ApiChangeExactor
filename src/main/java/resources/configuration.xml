@@ -26,7 +26,7 @@
   </environments>
   
   <mappers>
-    <!--  <mapper resource="resources/mappers/repository.xml"/>-->
+    <mapper resource="resources/mappers/repository.xml"/>
     <mapper resource="resources/mappers/apichange.xml"/>
   </mappers>
 </configuration>
