@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.edu.fudan.se.apiChangeExtractor.bean.Repository;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 
 public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);

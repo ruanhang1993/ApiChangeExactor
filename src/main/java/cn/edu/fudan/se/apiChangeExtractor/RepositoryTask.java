@@ -2,7 +2,7 @@ package cn.edu.fudan.se.apiChangeExtractor;
 
 import java.util.concurrent.Callable;
 
-import cn.edu.fudan.se.apiChangeExtractor.bean.Repository;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 
 public class RepositoryTask implements Callable<String> {
 	private Repository repository;

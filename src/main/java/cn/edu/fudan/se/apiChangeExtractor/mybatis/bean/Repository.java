@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor.bean;
+package cn.edu.fudan.se.apiChangeExtractor.mybatis.bean;
 
 import java.util.Date;
 

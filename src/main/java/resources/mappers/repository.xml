@@ -13,24 +13,11 @@
 		<result property="description" column="description" />
 	</resultMap>
 	
-	<select id="countAll" resultType="long">
-		select count(*) from repository
-    </select>
     <select id="selectAllRepository" resultMap="repository">
     	select * from repository
     </select>
-    <select id="selectByName" resultMap="repository" parameterType="String">
-    	select * from repository where repository_name = #{name}
-    </select>
-    <select id="selectByPrimaryKey" resultMap="repository">
-    	select * from repository where repository_id = #{id}
-    </select>
     <select id="selectInScope" resultMap="repository">
-    	select * from repository limit #{start},#{count}
-    </select>
-    
-    <select id="selectLikeName" resultMap="repository" parameterType="String">
-    	select * from repository where repository_name like #{name}
+    	select * from repository where repository_id >= #{start} and repository_id < #{end}
     </select>
 </mapper>
     

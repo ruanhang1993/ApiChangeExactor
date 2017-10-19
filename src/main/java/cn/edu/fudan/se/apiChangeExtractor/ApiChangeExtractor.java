@@ -42,10 +42,10 @@ import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
 import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
-import cn.edu.fudan.se.apiChangeExtractor.bean.Repository;
 import cn.edu.fudan.se.apiChangeExtractor.changedistiller.ChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Apichange;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 import cn.edu.fudan.se.apiChangeExtractor.mybatis.dao.ApichangeDao;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
 

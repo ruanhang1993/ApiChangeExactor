@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import cn.edu.fudan.se.apiChangeExtractor.bean.Repository;
+import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 import cn.edu.fudan.se.apiChangeExtractor.mybatis.mapper.RepositoryMapper;
 
 public class RepositoryDao {
@@ -17,18 +17,6 @@ public class RepositoryDao {
 	
 	public static RepositoryDao getInstance(){
 		return SingletonHolder.repostoryDao;
-	}
-	
-	public long countAll(){
-		SqlSession sqlSession = sqlSessionFactory.openSession();
-		long count = 0;
-		try{
-			count = sqlSession.getMapper(RepositoryMapper.class).countAll();
-			sqlSession.commit();
-		}finally {
-		    sqlSession.close();
-		}	
-		return count;
 	}
 	
 	public List<Repository> selectAll(){
@@ -43,54 +31,15 @@ public class RepositoryDao {
 		return rList;
 	}
 	
-	public Repository selectById(int id){
-		SqlSession sqlSession = sqlSessionFactory.openSession();
-		Repository r = null;
-		try{
-			r = sqlSession.getMapper(RepositoryMapper.class).selectByPrimaryKey(id);
-			sqlSession.commit();
-		}finally {
-		    sqlSession.close();
-		}	
-		return r;
-	}
-	
-	public List<Repository> selectByName(String name){
-		SqlSession sqlSession = sqlSessionFactory.openSession();
-		List<Repository> r = null;
-		try{
-			r = sqlSession.getMapper(RepositoryMapper.class).selectByName(name);
-			sqlSession.commit();
-		}finally {
-		    sqlSession.close();
-		}	
-		return r;
-	}
-	
-	public List<Repository> selectInPage(int page){
-		//pages start from 1
-		int inOnePage = 20;
-		int start = (page-1)*inOnePage;
+	public List<Repository> selectInScope(int start, int end){
 		SqlSession sqlSession = sqlSessionFactory.openSession();
 		List<Repository> rList = null;
 		try{
-			rList = sqlSession.getMapper(RepositoryMapper.class).selectInScope(start, inOnePage);
+			rList = sqlSession.getMapper(RepositoryMapper.class).selectInScope(start, end);
 			sqlSession.commit();
 		}finally {
 		    sqlSession.close();
 		}	
 		return rList;
-	}
-	
-	public List<Repository> selectLikeName(String name){
-		SqlSession sqlSession = sqlSessionFactory.openSession();
-		List<Repository> r = null;
-		try{
-			r = sqlSession.getMapper(RepositoryMapper.class).selectLikeName("%"+name+"%");
-			sqlSession.commit();
-		}finally {
-		    sqlSession.close();
-		}	
-		return r;
 	}
 }
