@@ -1,2 +1,5 @@
 /target/
 *.class
+
+/src/main/java/resources/configuration.xml
+log
