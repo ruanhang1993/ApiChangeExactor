@@ -6,15 +6,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 import cn.edu.fudan.se.apiChangeExtractor.mybatis.dao.RepositoryDao;
-import cn.edu.fudan.se.apiChangeExtractor.util.PathUtils;
 
 public class Main {
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	private LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
 	private ExecutorService service = new MyThreadPool(8, 8, 0, TimeUnit.MINUTES, queue);
 
