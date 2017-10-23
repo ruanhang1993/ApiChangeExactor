@@ -19,7 +19,6 @@ public class Main {
 	private ExecutorService service = new MyThreadPool(8, 8, 0, TimeUnit.MINUTES, queue);
 
 	private RepositoryDao dao = new RepositoryDao();
-	
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.extractRepositories(main.getTestData());
