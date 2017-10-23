@@ -40,8 +40,7 @@ public class ApiChangeTest {
 			}
 			System.out.println();
 		}
-		System.out.println(count);
-		while(true){}
+		System.out.println("count : "+count);
 	}
 	
 	@Test
@@ -55,7 +54,7 @@ public class ApiChangeTest {
 	
 	@Test
 	public void testExtractApiChangeByDiffAfterCommit(){
-		apiExtractor3.extractApiChangeByDiffAfterCommit("f6d2fe471a26fb6ff5894480f50dd55365e62f06");
+		apiExtractor5.extractApiChangeByDiffAfterCommit("69d371c442e74bd03ff56a0f4cdb220599c0167a");
 	}
 }
 

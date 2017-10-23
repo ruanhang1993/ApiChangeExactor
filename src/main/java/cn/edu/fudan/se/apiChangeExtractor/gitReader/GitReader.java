@@ -309,6 +309,7 @@ public class GitReader {
 		return null;
 	}
 	public byte[] getFileByObjectId(boolean isNewFile, ObjectId blobId) {
+		if("0000000000000000000000000000000000000000".equals(blobId.getName())) return new byte[0];
 		ObjectLoader loader;
 		try {
 			loader = repository.open(blobId);

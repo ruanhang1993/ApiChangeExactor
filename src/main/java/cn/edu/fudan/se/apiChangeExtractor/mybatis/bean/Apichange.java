@@ -85,5 +85,7 @@ public class Apichange {
 	public void setParameter(String parameter) {
 		this.parameter = parameter;
 	}
-	
+	public String toString(){
+		return this.repositoryId+"/"+this.commitId+"/"+this.parentCommitId+"/"+this.newFileName+"/"+this.oldFileName+"/"+this.lineNumber+"/"+this.changeType+"/"+this.content+"/"+this.completeClassName+"/"+this.methodName+"/"+this.parameter;
+	}
 }

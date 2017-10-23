@@ -14,7 +14,8 @@ public class GitTest {
 	String repositoryPath2 = "D:/github/ChangeExtractor";
 	String repositoryPath3 = "D:/github/spring-framework";
 	String repositoryPath4 = "D:/github/h2o-3";
-	GitReader reader = new GitReader(repositoryPath4);
+	String repositoryPath5 = "D:/github/checkstyle";
+	GitReader reader = new GitReader(repositoryPath5);
 	@Test
 	public void testGetLastCommit(){
 		RevCommit last = reader.getLastCommit();
@@ -35,7 +36,7 @@ public class GitTest {
 	
 	@Test
 	public void testGetFileContentByCommitId(){
-		reader.getFileContentByCommitId("159c4b82b941edf7a1612bf76fdce3f400ed753e", "src/main/java/cn/edu/fudan/se/ApiChangeExactor/Main.java");
+		reader.getFileContentByCommitId("69d371c442e74bd03ff56a0f4cdb220599c0167a", "src/test/resources/com/puppycrawl/tools/checkstyle/checks/misc/avoidescapedunicodecharacters/InputAllEscapedUnicodeCharacters.java");
 	}
 	
 	@Test
@@ -49,8 +50,8 @@ public class GitTest {
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
-		byte[] newContent = reader.getFileContentByCommitId("627362bceecb3f090495f7fc2d0c322b9defd35c", "h2o-core/src/main/java/water/Job.java");
-		byte[] oldContent = reader.getFileContentByCommitId("9b8969d221475ea4e5e176df1c585f67ff46c400", "h2o-core/src/main/java/water/Job.java");
+		byte[] newContent = reader.getFileContentByCommitId("69d371c442e74bd03ff56a0f4cdb220599c0167a", "src/test/resources/com/puppycrawl/tools/checkstyle/checks/misc/avoidescapedunicodecharacters/InputAllEscapedUnicodeCharacters.java");
+		byte[] oldContent = reader.getFileContentByCommitId("69d371c442e74bd03ff56a0f4cdb220599c0167a", "src/test/resources/com/puppycrawl/tools/checkstyle/checks/misc/avoidescapedunicodecharacters/InputAllEscapedUnicodeCharacters.java");
 		String randomString = UUID.randomUUID().toString();
 		File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 		File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");

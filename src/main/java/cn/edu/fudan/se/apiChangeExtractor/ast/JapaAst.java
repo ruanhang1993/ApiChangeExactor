@@ -102,7 +102,6 @@ public class JapaAst {
         }
     }
 
-
     /**
      * 将输入的className,不重复地插入到list中,并返回这个list
      */
@@ -198,52 +197,6 @@ public class JapaAst {
             add2List(names, filterSquareBracket(filterAngleBracket(node.getType().toString())));
             super.visit(node, arg);
         }
-
-//        @Override
-//        public void visit(ExpressionStmt node, Void arg) {
-//            handleExpression(node.getExpression());
-//            super.visit(node, arg);
-//        }
-
-//        public void handleExpression(Expression expr) {
-//            if (expr instanceof VariableDeclarationExpr) {
-//                VariableDeclarationExpr expression = (VariableDeclarationExpr) expr;
-//                add2List(names, filterSquareBracket(filterAngleBracket(expression.getType().toString())));
-//                if (expression.getVars() != null) {
-//                    for (int i = 0; i < expression.getVars().size(); i++) {
-//                        handleExpression(expression.getVars().get(i).getInit());
-//                    }
-//                }
-//            } else if (expr instanceof ObjectCreationExpr) {
-//                ObjectCreationExpr expression = (ObjectCreationExpr) expr;
-//                add2List(names, filterSquareBracket(filterAngleBracket(expression.getType().getName())));
-//                if (expression.getArgs() != null) {
-//                    for (int i = 0; i < expression.getArgs().size(); i++) {
-//                        handleExpression(expression.getArgs().get(i));
-//                    }
-//                }
-//            } else if (expr instanceof AssignExpr) {
-//                AssignExpr expression = (AssignExpr) expr;
-//                handleExpression(expression.getValue());
-//            } else if (expr instanceof MethodCallExpr) {
-//                MethodCallExpr expression = (MethodCallExpr) expr;
-//                // 处理调用者,如 new Scanner(...).delimiter()的Scanner
-//                handleExpression(expression.getScope());
-//                // 处理方法调用的参数
-//                if (expression.getArgs() != null) {
-//                    for (int i = 0; i < expression.getArgs().size(); i++) {
-//                        handleExpression(expression.getArgs().get(i));
-//                    }
-//                }
-//            }else if(expr instanceof CastExpr){
-//                CastExpr expression = (CastExpr) expr;
-//                add2List(names, filterSquareBracket(filterAngleBracket(expression.getType().toString())));
-//                handleExpression(expression.getExpr());
-//            }else if(expr instanceof EnclosedExpr){
-//                EnclosedExpr expression = (EnclosedExpr) expr;
-//                handleExpression(expression.getInner());
-//            }
-//        }
 
         public void visit(NameExpr node, Void arg){
             add2List(names,filterSquareBracket(filterAngleBracket(node.getName())));

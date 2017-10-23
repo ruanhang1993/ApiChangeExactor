@@ -18,7 +18,7 @@ public class MybatisTest {
 		apichangeDao.insertOneApichange(new Apichange());
 	}
 	@Test
-	public void testAddOneApiChangeList(){
+	public void testAddApiChangeList(){
 		List<Apichange> list = new ArrayList<Apichange>();
 		list.add(new Apichange());
 		list.add(new Apichange());
