@@ -74,6 +74,28 @@ public class GitReader {
 		}
 		return allCommits;
 	}
+	
+	public RevCommit getOneCommit(String sha){
+		ObjectId objId;
+		try {
+			objId = repository.resolve(sha);
+			if (objId == null) {
+				System.err.println("The commit: " + sha + " does not exist.");
+				return null;
+			}
+			return revWalk.parseCommit(objId);
+		} catch (RevisionSyntaxException e) {
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public List<ChangeFile> getChangeFiles(RevCommit commit){
     	List<ChangeFile> changeFiles= new ArrayList<ChangeFile>();
 		
@@ -268,10 +290,6 @@ public class GitReader {
 				ObjectLoader loader = repository.open(blobId);
 				byte[] bytes = loader.getBytes();
 				return bytes;
-				
-//				InputStream input = FileUtils.open(blobId, repository);
-//				byte[] bytes = FileUtils.toByteArray(input);
-//				return bytes;
 			} else {
 				System.err.println("Cannot found file(" + filePath + ") in commit (" + commitId + "): " + revWalk);
 			}
