@@ -2,4 +2,7 @@ Logger--> INFO{MyThreadPool.java:39}-repository: -1 finished
    Logger--> INFO{MyThreadPool.java:39}-repository: -2 finished
    Logger--> INFO{MyThreadPool.java:39}-repository: -3 finished
    Logger--> INFO{MyThreadPool.java:39}-repository: -4 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -5 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -6 finished
+   Logger--> INFO{MyThreadPool.java:39}-repository: -7 finished
    
