@@ -110,7 +110,8 @@ public class GitReader {
 		}
         //每一个diffEntry都是文件版本之间的变动差异
 		for (DiffEntry diffEntry : diff) {
-			if(DiffEntry.ChangeType.MODIFY.toString().equals(diffEntry.getChangeType().toString())&&diffEntry.getNewPath()!=null&&diffEntry.getNewPath().endsWith(".java")){
+			//DiffEntry.ChangeType.MODIFY.toString().equals(diffEntry.getChangeType().toString())&&
+			if(diffEntry.getNewPath()!=null&&diffEntry.getNewPath().endsWith(".java")){
 				changeFiles.add(new ChangeFile(diffEntry.getChangeType().toString(), diffEntry.getOldPath(), diffEntry.getNewPath(), 
 	        			commit.getName(), (commit.getParents()[0]).getName(), diffEntry.getNewId().toObjectId(), diffEntry.getOldId().toObjectId()));
 
@@ -215,7 +216,8 @@ public class GitReader {
 
 	public AbstractTreeIterator prepareTreeParser(RevCommit commit){
     	try (RevWalk walk = new RevWalk(repository)) {
-            RevTree tree = walk.parseTree(commit.getTree().getId());
+    		RevCommit temp = walk.parseCommit( commit.getId() );
+            RevTree tree = walk.parseTree(temp.getTree().getId());
 
             CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
             try (ObjectReader oldReader = repository.newObjectReader()) {
