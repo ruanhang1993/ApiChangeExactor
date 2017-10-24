@@ -34,11 +34,15 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import cn.edu.fudan.se.apiChangeExtractor.ApiChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 
 public class GitReader {
+	private static final Logger logger = LoggerFactory.getLogger(GitReader.class);
 	private Git git;
 	private Repository repository;
 	private RevWalk revWalk;
@@ -52,6 +56,8 @@ public class GitReader {
 			revWalk = new RevWalk(repository);
 		} catch (IOException e) {
 			e.printStackTrace();
+			logger.info("repositoryPath: "+repositoryPath+" Error");
+			logger.info(e.getMessage());
 		}
 	}
 	

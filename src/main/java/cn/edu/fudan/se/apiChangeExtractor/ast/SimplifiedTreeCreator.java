@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class SimplifiedTreeCreator extends TreeConverter {
+	private String classNameMap;
+	private String typeCast;
     private CodeTree codeTree = new CodeTree();
     private TreeNode lastNode = codeTree.getRoot();
     private Map<String, String> class_variable = new HashMap<String, String>();
@@ -82,8 +84,10 @@ public class SimplifiedTreeCreator extends TreeConverter {
     }
 
     public SimplifiedTreeCreator(String globalPath) {
+    	this.classNameMap = globalPath + System.getProperty("user.dir") +"/src/main/java/resources/class_name_map.config";
+    	this.typeCast = globalPath + System.getProperty("user.dir") +"/src/main/java/resources/type_cast.config";
         try {
-            File fileClassNameMap = new File(globalPath + "/Extractor/src/main/java/codetree/configs/class_name_map.config");
+            File fileClassNameMap = new File(classNameMap);
             FileInputStream fileInputStream = new FileInputStream(fileClassNameMap);
             Scanner scanner = new Scanner(fileInputStream);
             while (scanner.hasNextLine()) {
@@ -121,14 +125,14 @@ public class SimplifiedTreeCreator extends TreeConverter {
         }
 
         try {
-            File fileTypeCast = new File(globalPath + "/Extractor/src/main/java/codetree/configs/type_cast.config");
+            File fileTypeCast = new File(typeCast);
             FileInputStream fileInputStream = new FileInputStream(fileTypeCast);
             Scanner scanner = new Scanner(fileInputStream);
             while (scanner.hasNextLine()) {
                 castMap.put(scanner.nextLine(), true);
             }
 
-            File fileClassNameMap = new File(globalPath + "/Extractor/src/main/java/codetree/configs/class_name_map.config");
+            File fileClassNameMap = new File(classNameMap);
             fileInputStream = new FileInputStream(fileClassNameMap);
             scanner = new Scanner(fileInputStream);
             while (scanner.hasNextLine()) {

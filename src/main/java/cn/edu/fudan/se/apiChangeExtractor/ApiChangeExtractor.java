@@ -401,10 +401,10 @@ public class ApiChangeExtractor {
 //                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
 //                                    return codeTree.getJdkCall();
                                     //displayTree(codeTree,false);
-                                } else {
+                                } /*else {
                                     System.err.println("So " + method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()) + " (" + ") " + " can not be correctly parsed");
 //                                    return null;
-                                }
+                                }*/
                             }
                         }
                     }
