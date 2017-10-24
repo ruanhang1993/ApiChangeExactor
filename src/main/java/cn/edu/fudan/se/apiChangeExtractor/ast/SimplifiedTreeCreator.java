@@ -84,8 +84,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
     }
 
     public SimplifiedTreeCreator(String globalPath) {
-    	this.classNameMap = globalPath + System.getProperty("user.dir") +"/src/main/java/resources/class_name_map.config";
-    	this.typeCast = globalPath + System.getProperty("user.dir") +"/src/main/java/resources/type_cast.config";
+    	classNameMap = globalPath +System.getProperty("user.dir")+ "/src/main/java/resources/class_name_map.config";
+    	typeCast= globalPath +System.getProperty("user.dir")+ "/src/main/java/resources/type_cast.config";
         try {
             File fileClassNameMap = new File(classNameMap);
             FileInputStream fileInputStream = new FileInputStream(fileClassNameMap);
@@ -104,6 +104,8 @@ public class SimplifiedTreeCreator extends TreeConverter {
     }
 
     public SimplifiedTreeCreator(List<String> completeClassNameList, SimplifiedTreeCreator creator, String globalPath) {
+    	classNameMap = globalPath +System.getProperty("user.dir")+ "/src/main/java/resources/class_name_map.config";
+    	typeCast= globalPath +System.getProperty("user.dir")+ "/src/main/java/resources/type_cast.config";
         class_name_map = creator.getClass_name_map();
         class_variable_list = creator.getClass_variable_list();
         class_variable = creator.getClass_variable();
