@@ -1,21 +1,24 @@
 package cn.edu.fudan.se.test;
 
 import java.io.File;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
+import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
+import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 import cn.edu.fudan.se.apiChangeExtractor.gitReader.GitReader;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
 
 public class GitTest {
-	String repositoryPath1 = "D:/javaee/parser/ApiChangeExactor";
+	String repositoryPath1 = "D:/javaee/parser/ApiChangeExtractor";
 	String repositoryPath2 = "D:/github/ChangeExtractor";
 	String repositoryPath3 = "D:/github/spring-framework";
 	String repositoryPath4 = "D:/github/h2o-3";
 	String repositoryPath5 = "D:/github/checkstyle";
-	GitReader reader = new GitReader(repositoryPath5);
+	GitReader reader = new GitReader(repositoryPath1);
 	@Test
 	public void testGetLastCommit(){
 		RevCommit last = reader.getLastCommit();
@@ -59,6 +62,24 @@ public class GitTest {
 	
 	@Test
 	public void testSeeDiff(){
-		reader.getChangeFiles(reader.getOneCommit("627362bceecb3f090495f7fc2d0c322b9defd35c"));
+		reader.getChangeFiles(reader.getOneCommit("4f3a70d1ab940e38d445a3cf73fcc74c8c248831"));
+	}
+	@Test
+	public void testSeeChangeFile(){
+		List<ChangeFile> files = reader.getChangeFiles(reader.getOneCommit("4f3a70d1ab940e38d445a3cf73fcc74c8c248831"));
+		for(ChangeFile f:files){
+			System.out.println("================================================================================================================================================");
+			printChangeFile(f);
+		}
+	}
+	public void printChangeFile(ChangeFile f){
+		System.out.println("++++ "+f.getNewPath());
+		System.out.println("---- "+f.getOldPath());
+		for(ChangeLine l: f.getChangeLines()){
+			if(!"CONTENT".equals(l.getType()))
+				System.out.println(l.getLineNum()+"   "+l.getSequence());
+			else
+				System.out.println(l.getLineNum()+"/"+l.getOldNum()+"   "+l.getSequence());
+		}
 	}
 }

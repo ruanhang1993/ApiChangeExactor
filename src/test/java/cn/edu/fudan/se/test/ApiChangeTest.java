@@ -8,7 +8,6 @@ import org.junit.Test;
 import cn.edu.fudan.se.apiChangeExtractor.ApiChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdkSequence;
 import cn.edu.fudan.se.apiChangeExtractor.bean.MethodCall;
-import cn.edu.fudan.se.apiChangeExtractor.mybatis.bean.Repository;
 
 public class ApiChangeTest {
 	String repositoryPath1 = "D:/javaee/parser/ApiChangeExtractor";
@@ -23,8 +22,8 @@ public class ApiChangeTest {
 	ApiChangeExtractor apiExtractor5 = new ApiChangeExtractor(repositoryPath5,-5);
 	@Test
 	public void testExtractApiChange(){
-		apiExtractor2.extractApiChange();
-		apiExtractor3.extractApiChange();
+//		apiExtractor2.extractApiChange();
+//		apiExtractor3.extractApiChange();
 	}
 	@Test
 	public void testConstructData(){

@@ -46,9 +46,13 @@ public class GitReader {
 	private Git git;
 	private Repository repository;
 	private RevWalk revWalk;
-	public static final String ADD ="ADD";
-	public static final String DELETE ="DELETE";
 
+	public enum ChangeType {
+		ADD,
+		DELETE,
+		CONTENT
+	}
+	
 	public GitReader(String repositoryPath) {
 		try {
 			git = Git.open(new File(repositoryPath));
@@ -164,15 +168,26 @@ public class GitReader {
 		return ret;
 		
 	}
+	public boolean diffBlockStart(String s){
+		if(s == null) return false;
+		if(!s.startsWith("@@")) return false;
+		if(s.length() <= 4) return false;
+		return true;
+	}
 	private void insertAllAddAndDelete(String name, ChangeFile changeFile, String fName) {
 		BufferedReader inputStream =null;
 		try {
-        	String str;
             inputStream = new BufferedReader(new InputStreamReader(new FileInputStream(fName),"UTF-8"));
             ArrayList<Integer> range = new ArrayList<>();
+        	String str = inputStream.readLine();
             boolean go = false;
             
-			while((str = inputStream.readLine()) != null){
+            //跳过diff的header
+            while(str != null && !diffBlockStart(str)){
+            	str = inputStream.readLine();
+            }
+            
+			while(str != null){
 				ArrayList<Integer> tempRange = getRange(str);
 				if(tempRange.size()>0){
 					go = false;
@@ -187,26 +202,31 @@ public class GitReader {
 					}
 					if(!go){
 						if("+".equals(str.substring(0, 1))){
-							changeFile.getChangeLines().add(new ChangeLine(range.get(2), str.replace("\\", "\\\\").replace("\"", "\\\""), ADD));
+							changeFile.getChangeLines().add(new ChangeLine(range.get(2), str.replace("\\", "\\\\").replace("\"", "\\\""), ChangeType.ADD.toString()));
 							range.set(2, range.get(2)+1);
 							range.set(3, range.get(3)-1);
 						}else if("-".equals(str.substring(0, 1))){
-							changeFile.getChangeLines().add(new ChangeLine(range.get(0), str.replace("\\", "\\\\").replace("\"", "\\\""), DELETE));
+							changeFile.getChangeLines().add(new ChangeLine(range.get(0), str.replace("\\", "\\\\").replace("\"", "\\\""), ChangeType.DELETE.toString()));
 							range.set(0, range.get(0)+1);
 							range.set(1, range.get(1)-1);
 						}
 						else{
+							ChangeLine changeLine = new ChangeLine(-1, str.replace("\\", "\\\\").replace("\"", "\\\""), ChangeType.CONTENT.toString(),-1);
 							if(range.get(1)!=0){
+								changeLine.setOldNum(range.get(0));
 								range.set(0, range.get(0)+1);
 								range.set(1, range.get(1)-1);
 							}
 							if(range.get(3)!=0){
+								changeLine.setLineNum(range.get(2));
 								range.set(2, range.get(2)+1);
 								range.set(3, range.get(3)-1);
 							}
+							changeFile.getChangeLines().add(changeLine);
 						}
 					}
 				}
+				str = inputStream.readLine();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -55,12 +55,12 @@
 			<version>4.7.0.201704051617-r</version>
 		</dependency>
 
-		<!-- changedistiller -->
+		<!-- changedistiller 
 		<dependency>
 			<groupId>ch.uzh.ifi.seal</groupId>
 			<artifactId>changedistiller</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
 		<dependency>
 		    <groupId>org.mybatis</groupId>
@@ -96,6 +96,12 @@
 		    <version>1.7.25</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.core -->
+		<dependency>
+		    <groupId>org.eclipse.jdt</groupId>
+		    <artifactId>org.eclipse.jdt.core</artifactId>
+		    <version>3.12.2</version>
+		</dependency>
 		
 	</dependencies>
 

@@ -3,6 +3,7 @@ package cn.edu.fudan.se.apiChangeExtractor;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.Node;
 import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
@@ -23,16 +24,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
+//
+//import ch.uzh.ifi.seal.changedistiller.model.entities.Delete;
+//import ch.uzh.ifi.seal.changedistiller.model.entities.Insert;
+//import ch.uzh.ifi.seal.changedistiller.model.entities.Move;
+//import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
+//import ch.uzh.ifi.seal.changedistiller.model.entities.Update;
 import cn.edu.fudan.se.apiChangeExtractor.ast.CodeTree;
 import cn.edu.fudan.se.apiChangeExtractor.ast.DisplayTreeView;
 import cn.edu.fudan.se.apiChangeExtractor.ast.JapaAst;
@@ -108,10 +108,12 @@ public class ApiChangeExtractor {
 				}
 				
 				for(ChangeLine line : changeFile.getChangeLines()){
-					if(GitReader.ADD.equals(line.getType())){
+					if(GitReader.ChangeType.ADD.toString().equals(line.getType())){
 						matchChangeAndApi(apiChangeList, line, newJdkCall, changeFile);
-					}else{
+					}else if(GitReader.ChangeType.DELETE.toString().equals(line.getType())){
 						matchChangeAndApi(apiChangeList, line, oldJdkCall, changeFile);
+					}else{
+						//TODO CONTENT类型尚未处理
 					}
 				}
 				newFile.delete();
@@ -160,10 +162,12 @@ public class ApiChangeExtractor {
 				}
 				
 				for(ChangeLine line : changeFile.getChangeLines()){
-					if(GitReader.ADD.equals(line.getType())){
+					if(GitReader.ChangeType.ADD.toString().equals(line.getType())){
 						matchChangeAndApi(apiChangeList, line, newJdkCall, changeFile);
-					}else{
+					}else if(GitReader.ChangeType.DELETE.toString().equals(line.getType())){
 						matchChangeAndApi(apiChangeList, line, oldJdkCall, changeFile);
+					}else{
+						//TODO CONTENT类型尚未处理
 					}
 				}
 				newFile.delete();
@@ -196,68 +200,68 @@ public class ApiChangeExtractor {
 			}
 		}
 	}
-	public void extractApiChange(){
-		String userDirPath = System.getProperty("user.dir");
-		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
-		File tempDir = new File(tempDirPath);
-		tempDir.mkdirs();
-		List<RevCommit> commits = gitReader.getCommits();
-		for(RevCommit commit : commits){
-			System.out.println("=======================================================================================================================================================");
-			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
-			for(ChangeFile changeFile : changeFiles){
-				if(DiffEntry.ChangeType.MODIFY.toString().equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
-					System.out.println("******************************************************************************************************************************************************");
-					System.out.println(changeFile.getNewPath());
-					byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
-					byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
-					String randomString = UUID.randomUUID().toString();
-					File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
-					File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
-					List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
-					if(changes.size()>0){
-						Map<Integer, JdkSequence> jdkCall = constructData(newFile);
-						matchChangeAndApi(changes, jdkCall);
-					}
-					newFile.delete();
-					oldFile.delete();
-				}
-			}
-		}
-		tempDir.delete();
-	}
-	public void matchChangeAndApi(List<SourceCodeChange> changes, Map<Integer, JdkSequence> jdkCall) {
-		if(jdkCall==null){
-			for(SourceCodeChange change:changes){
-				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
-			}
-		}else{
-			for(SourceCodeChange change:changes){
-				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
-				if(change instanceof Update){
-					matchUpdate((Update) change, jdkCall);
-				}else if(change instanceof Move){
-					matchMove((Move) change, jdkCall);	
-				}else if(change instanceof Insert){
-					matchInsert((Insert) change, jdkCall);
-				}else{
-					matchDelete((Delete) change, jdkCall);
-				}
-			}
-		}
-	}
-	public void matchUpdate(Update change, Map<Integer, JdkSequence> jdkCall){
-		
-	}
-	public void matchMove(Move change,Map<Integer, JdkSequence> jdkCall){
-		
-	}
-	public void matchInsert(Insert change, Map<Integer, JdkSequence> jdkCall){
-		
-	}
-	public void matchDelete(Delete change, Map<Integer, JdkSequence> jdkCall){
-		
-	}
+//	public void extractApiChange(){
+//		String userDirPath = System.getProperty("user.dir");
+//		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
+//		File tempDir = new File(tempDirPath);
+//		tempDir.mkdirs();
+//		List<RevCommit> commits = gitReader.getCommits();
+//		for(RevCommit commit : commits){
+//			System.out.println("=======================================================================================================================================================");
+//			List<ChangeFile> changeFiles = gitReader.getChangeFiles(commit);
+//			for(ChangeFile changeFile : changeFiles){
+//				if(DiffEntry.ChangeType.MODIFY.toString().equals(changeFile.getChangeType())&&changeFile.getNewPath().endsWith(".java")){
+//					System.out.println("******************************************************************************************************************************************************");
+//					System.out.println(changeFile.getNewPath());
+//					byte[] newContent = gitReader.getFileByObjectId(true,changeFile.getNewBlobId());
+//					byte[] oldContent = gitReader.getFileByObjectId(false,changeFile.getOldBlobId());
+//					String randomString = UUID.randomUUID().toString();
+//					File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
+//					File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+//					List<SourceCodeChange> changes = changeExactor.extractChangesInFile(oldFile, newFile);
+//					if(changes.size()>0){
+//						Map<Integer, JdkSequence> jdkCall = constructData(newFile);
+//						matchChangeAndApi(changes, jdkCall);
+//					}
+//					newFile.delete();
+//					oldFile.delete();
+//				}
+//			}
+//		}
+//		tempDir.delete();
+//	}
+//	public void matchChangeAndApi(List<SourceCodeChange> changes, Map<Integer, JdkSequence> jdkCall) {
+//		if(jdkCall==null){
+//			for(SourceCodeChange change:changes){
+//				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
+//			}
+//		}else{
+//			for(SourceCodeChange change:changes){
+//				System.out.println(change.getClass().getSimpleName() + ": " + change.getChangedEntity().getUniqueName()+"/ "+change.getLabel());
+//				if(change instanceof Update){
+//					matchUpdate((Update) change, jdkCall);
+//				}else if(change instanceof Move){
+//					matchMove((Move) change, jdkCall);	
+//				}else if(change instanceof Insert){
+//					matchInsert((Insert) change, jdkCall);
+//				}else{
+//					matchDelete((Delete) change, jdkCall);
+//				}
+//			}
+//		}
+//	}
+//	public void matchUpdate(Update change, Map<Integer, JdkSequence> jdkCall){
+//		
+//	}
+//	public void matchMove(Move change,Map<Integer, JdkSequence> jdkCall){
+//		
+//	}
+//	public void matchInsert(Insert change, Map<Integer, JdkSequence> jdkCall){
+//		
+//	}
+//	public void matchDelete(Delete change, Map<Integer, JdkSequence> jdkCall){
+//		
+//	}
 
 	public Map<Integer, JdkSequence> constructData(File file){
 		Map<Integer, JdkSequence> result = new HashMap<Integer, JdkSequence>();
@@ -279,7 +283,7 @@ public class ApiChangeExtractor {
 
         //如果Import的包中带有*号，那么得到含有*号的这个import
 		if(cu==null) return null;
-        List importList = cu.getImports();
+        List<ImportDeclaration> importList = cu.getImports();
         List<String> starImportStringList = new ArrayList<>();
         try{
         if (importList != null) {
@@ -303,6 +307,7 @@ public class ApiChangeExtractor {
         }catch(Error e){
         	e.printStackTrace();
         }
+        
         //开始分析程序
         if (cu.getTypes() != null) {
             for (TypeDeclaration type : cu.getTypes()) {
@@ -398,13 +403,11 @@ public class ApiChangeExtractor {
                                 if (codeTree != null && codeTree.getRoot() != null && codeTree.getTotalNumber() <= 1574) {
                                 	/*display the code tree*/
                                 	result.putAll(codeTree.getJdkCall());
-//                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
-//                                    return codeTree.getJdkCall();
-                                    //displayTree(codeTree,false);
-                                } /*else {
+                                    displayTree(codeTree, true, method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()));
+                                } else {
                                     System.err.println("So " + method.getName() + (method.getParameters() == null ? "[]" : method.getParameters()) + " (" + ") " + " can not be correctly parsed");
 //                                    return null;
-                                }*/
+                                }
                             }
                         }
                     }
@@ -422,14 +425,14 @@ public class ApiChangeExtractor {
 		SimplifiedTreeCreator creator = new SimplifiedTreeCreator(completeClassNameList, fieldCreator, globalPath);
 		creator.setHoleFlag(holeFlag);
 		for (int i = 0; i < parameterNameList.size(); i++) {
-		creator.addClass_variable_list(parameterNameList.get(i));
+			creator.addClass_variable_list(parameterNameList.get(i));
 		}
 		for (int i = 0; i < typeMapList.size(); i++) {
-		String[] strings = typeMapList.get(i).split(" ");
-		creator.addClass_variable(strings[0], strings[1]);
+			String[] strings = typeMapList.get(i).split(" ");
+			creator.addClass_variable(strings[0], strings[1]);
 		}
 		for (int i = 0; i < completeTypeMapList.size(); i++) {
-		creator.addClass_name_map(completeTypeMapList.get(i));
+			creator.addClass_name_map(completeTypeMapList.get(i));
 		}
 		creator.setStarImportStringList(starImportStringList);
 		creator.setUserClassProcessing(userClassProcessing);
@@ -438,14 +441,14 @@ public class ApiChangeExtractor {
 		codeTree.setJdkCall(creator.getCodeTree().getJdkCall());
 		codeTree.setRoot(creator.getCodeTree().getRoot());
 		if (creator.getParsedFlag()) {
-		return codeTree;
+			return codeTree;
 		} else {
-		return null;
+			return null;
 		}
 		} catch (Exception e) {
-		return null;
+			return null;
 		} catch (Error e) {
-		return null;
+			return null;
 		}
 	}
 		
@@ -453,6 +456,5 @@ public class ApiChangeExtractor {
 		TreeView treeView = new TreeView();
 		treeView.convertCodeTree(codeTree, isCompleteFlag);
 		DisplayTreeView display = new DisplayTreeView(treeView.getTree(), title);
-		
 	}
 }
