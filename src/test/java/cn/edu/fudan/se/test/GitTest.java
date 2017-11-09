@@ -19,6 +19,7 @@ public class GitTest {
 	String repositoryPath4 = "D:/github/h2o-3";
 	String repositoryPath5 = "D:/github/checkstyle";
 	GitReader reader = new GitReader(repositoryPath1);
+	GitReader reader5 = new GitReader(repositoryPath5);
 	@Test
 	public void testGetLastCommit(){
 		RevCommit last = reader.getLastCommit();
@@ -53,8 +54,9 @@ public class GitTest {
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
 		tempDir.mkdirs();
-		byte[] newContent = reader.getFileContentByCommitId("69d371c442e74bd03ff56a0f4cdb220599c0167a", "src/test/resources/com/puppycrawl/tools/checkstyle/checks/misc/avoidescapedunicodecharacters/InputAllEscapedUnicodeCharacters.java");
-		byte[] oldContent = reader.getFileContentByCommitId("69d371c442e74bd03ff56a0f4cdb220599c0167a", "src/test/resources/com/puppycrawl/tools/checkstyle/checks/misc/avoidescapedunicodecharacters/InputAllEscapedUnicodeCharacters.java");
+		String f = "src/test/java/com/puppycrawl/tools/checkstyle/checks/whitespace/TypecastParenPadCheckTest.java";
+		byte[] newContent = reader5.getFileContentByCommitId("6ae9253d730e8bf0dcd864f545ae1776c59861b3", f);
+		byte[] oldContent = reader5.getFileContentByCommitId("9114dea760f6ee30668c2fd1f8d821b489e3e279", f);
 		String randomString = UUID.randomUUID().toString();
 		File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 		File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");

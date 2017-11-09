@@ -55,12 +55,13 @@
 			<version>4.7.0.201704051617-r</version>
 		</dependency>
 
-		<!-- changedistiller 
+		<!-- changedistiller
 		<dependency>
 			<groupId>ch.uzh.ifi.seal</groupId>
 			<artifactId>changedistiller</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>-->
+		</dependency> -->
+		
 		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
 		<dependency>
 		    <groupId>org.mybatis</groupId>
@@ -102,6 +103,22 @@
 		    <artifactId>org.eclipse.jdt.core</artifactId>
 		    <version>3.12.2</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/soot/soot
+		<dependency>
+		    <groupId>soot</groupId>
+		    <artifactId>soot</artifactId>
+		    <version>2.5.0</version>
+		</dependency> -->
+		
+		<!-- https://mvnrepository.com/artifact/com.github.gumtreediff/gumtree-all -->
+		<dependency>
+		    <groupId>com.github.gumtreediff</groupId>
+		    <artifactId>gumtree-all</artifactId>
+		    <version>2.0.0</version>
+		    <type>pom</type>
+		</dependency>
+
 		
 	</dependencies>
 
