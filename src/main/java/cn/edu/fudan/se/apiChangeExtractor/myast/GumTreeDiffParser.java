@@ -2,9 +2,7 @@ package cn.edu.fudan.se.apiChangeExtractor.myast;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.github.gumtreediff.actions.ActionGenerator;
 import com.github.gumtreediff.actions.model.Action;
@@ -91,10 +89,10 @@ public class GumTreeDiffParser {
 				ITree updateNode = update.getNode();
 				System.out.println("from "+updateNode.getLabel()+" to "+update.getValue());
 			}
-			System.out.println("--------------------------------------------");
+			System.out.println("----------------Node----------------------------");
 			System.out.println(dstTC.getTypeLabel(a.getNode())+"/"+a.getNode().getLabel());
 			System.out.println(toTreeString(dstTC, a.getNode()));
-			System.out.println("--------------------------------------------");
+			System.out.println("-----------------Parent---------------------------");
 			System.out.println(dstTC.getTypeLabel(a.getNode().getParent())+"/"+a.getNode().getParent().getLabel());
 			System.out.println(toTreeString(dstTC, a.getNode().getParent()));
 			System.out.println("============================================");
