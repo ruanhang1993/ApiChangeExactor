@@ -1,4 +1,4 @@
-package cn.edu.fudan.se.apiChangeExtractor.myast;
+package cn.edu.fudan.se.apiChangeExtractor.gumtreeParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,8 @@ import com.github.gumtreediff.actions.model.Insert;
 import com.github.gumtreediff.actions.model.Move;
 import com.github.gumtreediff.actions.model.Update;
 import com.github.gumtreediff.client.Run;
-import com.github.gumtreediff.gen.jdt.JdtTreeGenerator;
+import com.github.gumtreediff.jdt.JdtTreeGenerator;
+import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.ITree;
@@ -25,6 +26,8 @@ public class GumTreeDiffParser {
 	TreeContext dstTC;
 	ITree src;
 	ITree dst;
+	List<Action> actions;
+	MappingStore mapping;
 	
 	public GumTreeDiffParser(String oldFile, String newFile){
 		this.oldFile = oldFile;
@@ -39,19 +42,23 @@ public class GumTreeDiffParser {
 			src = srcTC.getRoot();
 			dstTC = parser.generateFromFile(new File(newFile));
 			dst = dstTC.getRoot();
+			Matcher m = Matchers.getInstance().getMatcher(src, dst); // retrieve the default matcher
+			m.match();
+			mapping = m.getMappings();
+			ActionGenerator g = new ActionGenerator(src, dst, mapping);
+			g.generate();
+			actions = g.getActions();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public List<Action> getActions(){
-		Matcher m = Matchers.getInstance().getMatcher(src, dst); // retrieve the default matcher
-		m.match();
-		ActionGenerator g = new ActionGenerator(src, dst, m.getMappings());
-		g.generate();
-		return g.getActions(); // return the actions
+		return actions;
 	}
-	
+	public MappingStore getMapping(){
+		return mapping;
+	}
 	public String getNewTreeString(){
 		return src.toTreeString();
 	}
@@ -125,6 +132,7 @@ public class GumTreeDiffParser {
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
 		diff.printActions(diff.getActions());
+		MappingStore store = diff.getMapping();
 	}
 
 }
