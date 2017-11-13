@@ -21,7 +21,6 @@
 package com.github.gumtreediff.actions.model;
 
 import com.github.gumtreediff.tree.ITree;
-import com.github.gumtreediff.tree.ITree;
 import com.github.gumtreediff.tree.TreeContext;
 
 public abstract class Action {

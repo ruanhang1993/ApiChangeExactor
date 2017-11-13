@@ -40,7 +40,11 @@ public abstract class Option {
     }
 
     public static class OptionException extends RuntimeException {
-        final Context context;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		final Context context;
 
         public OptionException(String msg, Context ctx) {
             super(msg);

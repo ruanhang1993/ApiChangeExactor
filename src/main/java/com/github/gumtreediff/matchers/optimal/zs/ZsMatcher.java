@@ -23,9 +23,7 @@ package com.github.gumtreediff.matchers.optimal.zs;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.tree.ITree;
-import com.github.gumtreediff.matchers.MappingStore;
-import com.github.gumtreediff.matchers.Matcher;
-import com.github.gumtreediff.tree.ITree;
+
 import org.simmetrics.StringMetrics;
 
 import java.util.Arrays;
@@ -226,7 +224,8 @@ public class ZsMatcher extends Matcher {
                 nodeCount = i;
         }
 
-        public boolean isLeaf(int i) {
+        @SuppressWarnings("unused")
+		public boolean isLeaf(int i) {
             return this.lld(i) == i;
         }
 

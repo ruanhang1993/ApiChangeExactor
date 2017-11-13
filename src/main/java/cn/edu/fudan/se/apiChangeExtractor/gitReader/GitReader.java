@@ -37,7 +37,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cn.edu.fudan.se.apiChangeExtractor.ApiChangeExtractor;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeFile;
 import cn.edu.fudan.se.apiChangeExtractor.bean.ChangeLine;
 

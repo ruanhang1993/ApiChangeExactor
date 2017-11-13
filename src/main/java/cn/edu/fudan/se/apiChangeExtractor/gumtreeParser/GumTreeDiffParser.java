@@ -3,7 +3,9 @@ package cn.edu.fudan.se.apiChangeExtractor.gumtreeParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
+import com.github.gumtreediff.actions.ActionClusterFinder;
 import com.github.gumtreediff.actions.ActionGenerator;
 import com.github.gumtreediff.actions.model.Action;
 import com.github.gumtreediff.actions.model.Delete;
@@ -28,6 +30,7 @@ public class GumTreeDiffParser {
 	ITree dst;
 	List<Action> actions;
 	MappingStore mapping;
+	ActionClusterFinder finder;
 	
 	public GumTreeDiffParser(String oldFile, String newFile){
 		this.oldFile = oldFile;
@@ -48,11 +51,15 @@ public class GumTreeDiffParser {
 			ActionGenerator g = new ActionGenerator(src, dst, mapping);
 			g.generate();
 			actions = g.getActions();
+			finder = new ActionClusterFinder(srcTC, dstTC, actions);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public List<Set<Action>> getCluster(){
+		return finder.getClusters();
+	}
 	public List<Action> getActions(){
 		return actions;
 	}
@@ -68,42 +75,45 @@ public class GumTreeDiffParser {
 	public void printActions(List<Action> actions){
 		System.out.println(actions.size());
 		for(Action a : actions){
-			if(a instanceof Delete){
-				System.out.print("Delete>");
-				Delete delete = (Delete)a;
-				ITree deleteNode = delete.getNode();
-				System.out.println(prettyString(dstTC,deleteNode)+" from "+prettyString(dstTC,deleteNode.getParent()));
-				System.out.println(delete.toString());
-			}
-			if(a instanceof Insert){
-				System.out.print("Insert>");
-				Insert insert = (Insert)a;
-				ITree insertNode = insert.getNode();
-				System.out.println(prettyString(dstTC,insertNode)+" to "+prettyString(dstTC,insertNode.getParent())+" at "+ insert.getPosition());
-				System.out.println(insert.toString());
-				System.out.println(insert.getParent()==insert.getNode().getParent());
-			}
-			if(a instanceof Move){
-				System.out.print("Move>");
-				Move move = (Move)a;
-				ITree moveNode = move.getNode();
-				System.out.println(prettyString(dstTC,moveNode)+" to "+prettyString(dstTC,moveNode.getParent())+" at "+ move.getPosition());
-				System.out.println(move.toString());
-			}
-			if(a instanceof Update){
-				System.out.print("Update>");
-				Update update = (Update)a;
-				ITree updateNode = update.getNode();
-				System.out.println("from "+updateNode.getLabel()+" to "+update.getValue());
-			}
-			System.out.println("----------------Node----------------------------");
-			System.out.println(dstTC.getTypeLabel(a.getNode())+"/"+a.getNode().getLabel());
-			System.out.println(toTreeString(dstTC, a.getNode()));
-			System.out.println("-----------------Parent---------------------------");
-			System.out.println(dstTC.getTypeLabel(a.getNode().getParent())+"/"+a.getNode().getParent().getLabel());
-			System.out.println(toTreeString(dstTC, a.getNode().getParent()));
-			System.out.println("============================================");
+			printOneAction(a);
 		}
+	}
+	public void printOneAction(Action a){
+		if(a instanceof Delete){
+			System.out.print("Delete>");
+			Delete delete = (Delete)a;
+			ITree deleteNode = delete.getNode();
+			System.out.println(prettyString(dstTC,deleteNode)+" from "+prettyString(dstTC,deleteNode.getParent()));
+			System.out.println(delete.toString());
+		}
+		if(a instanceof Insert){
+			System.out.print("Insert>");
+			Insert insert = (Insert)a;
+			ITree insertNode = insert.getNode();
+			System.out.println(prettyString(dstTC,insertNode)+" to "+prettyString(dstTC,insertNode.getParent())+" at "+ insert.getPosition());
+			System.out.println(insert.toString());
+			System.out.println(insert.getParent()==insert.getNode().getParent());
+		}
+		if(a instanceof Move){
+			System.out.print("Move>");
+			Move move = (Move)a;
+			ITree moveNode = move.getNode();
+			System.out.println(prettyString(dstTC,moveNode)+" to "+prettyString(dstTC,moveNode.getParent())+" at "+ move.getPosition());
+			System.out.println(move.toString());
+		}
+		if(a instanceof Update){
+			System.out.print("Update>");
+			Update update = (Update)a;
+			ITree updateNode = update.getNode();
+			System.out.println("from "+updateNode.getLabel()+" to "+update.getValue());
+		}
+		System.out.println("----------------Node----------------------------");
+		System.out.println(dstTC.getTypeLabel(a.getNode())+"/"+a.getNode().getLabel());
+		System.out.println(toTreeString(dstTC, a.getNode()));
+		System.out.println("-----------------Parent---------------------------");
+		System.out.println(dstTC.getTypeLabel(a.getNode().getParent())+"/"+a.getNode().getParent().getLabel());
+		System.out.println(toTreeString(dstTC, a.getNode().getParent()));
+		System.out.println("============================================");
 	}
 	
 	public String prettyString(TreeContext con, ITree node){
@@ -131,8 +141,15 @@ public class GumTreeDiffParser {
 		String file2 = "src/test/java/resources/CloseCase2.java";
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
-		diff.printActions(diff.getActions());
-		MappingStore store = diff.getMapping();
+//		diff.printActions(diff.getActions());
+		int count = 0;
+		for(Set<Action> as : diff.getCluster()){
+			System.out.println("***************************************************"+count+"********************************************");
+			for(Action a: as){
+				diff.printOneAction(a);
+			}
+			count++;
+		}
 	}
 
 }

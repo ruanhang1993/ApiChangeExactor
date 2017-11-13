@@ -22,8 +22,6 @@ package com.github.gumtreediff.client;
 
 import com.github.gumtreediff.io.TreeIoUtils;
 import com.github.gumtreediff.gen.Generators;
-import com.github.gumtreediff.io.TreeIoUtils;
-import com.github.gumtreediff.io.TreeIoUtils.TreeSerializer;
 import com.github.gumtreediff.tree.TreeContext;
 
 import java.io.FileOutputStream;

@@ -1,8 +1,5 @@
 package cn.edu.fudan.se.apiChangeExtractor.changedistiller;
 
-import java.io.File;
-import java.util.List;
-
 //import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 //import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 //import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;

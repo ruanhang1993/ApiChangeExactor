@@ -26,7 +26,6 @@ import com.github.gumtreediff.matchers.Mapping;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.tree.ITree;
 import com.github.gumtreediff.tree.TreeContext;
-import com.google.gson.internal.Excluder;
 import com.google.gson.stream.JsonWriter;
 
 import javax.xml.stream.XMLOutputFactory;

@@ -21,12 +21,11 @@ package com.github.gumtreediff.actions;
 
 import com.github.gumtreediff.actions.model.*;
 import com.github.gumtreediff.tree.TreeContext;
+
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 
 import java.util.List;
 import java.util.Set;
@@ -63,7 +62,7 @@ public class ActionClusterFinder {
             }
         }
 
-        ConnectivityInspector alg = new ConnectivityInspector(graph);
+        ConnectivityInspector<Action, DefaultEdge> alg = new ConnectivityInspector<>(graph);
         clusters = alg.connectedSets();
     }
 
