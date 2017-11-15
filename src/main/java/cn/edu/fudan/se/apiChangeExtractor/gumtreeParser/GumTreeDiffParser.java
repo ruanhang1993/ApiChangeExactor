@@ -52,11 +52,16 @@ public class GumTreeDiffParser {
 			g.generate();
 			actions = g.getActions();
 			finder = new ActionClusterFinder(srcTC, dstTC, actions);
+			finder.show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+	public void listStartNodes(){
+		for(Action a : finder.getStartNodes()){
+			System.out.println(a.toString());
+		}
+	}
 	public List<Set<Action>> getCluster(){
 		return finder.getClusters();
 	}
@@ -77,6 +82,9 @@ public class GumTreeDiffParser {
 		for(Action a : actions){
 			printOneAction(a);
 		}
+//		for(int i = 0; i < 200; i++){
+//			System.out.println(i+":"+srcTC.getTypeLabel(i));
+//		}
 	}
 	public void printOneAction(Action a){
 		if(a instanceof Delete){
@@ -141,15 +149,16 @@ public class GumTreeDiffParser {
 		String file2 = "src/test/java/resources/CloseCase2.java";
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
-//		diff.printActions(diff.getActions());
-		int count = 0;
-		for(Set<Action> as : diff.getCluster()){
-			System.out.println("***************************************************"+count+"********************************************");
-			for(Action a: as){
-				diff.printOneAction(a);
-			}
-			count++;
-		}
+		diff.printActions(diff.getActions());
+		diff.listStartNodes();
+//		int count = 0;
+//		for(Set<Action> as : diff.getCluster()){
+//			System.out.println("***************************************************"+count+"********************************************");
+//			for(Action a: as){
+//				diff.printOneAction(a);
+//			}
+//			count++;
+//		}
 	}
 
 }

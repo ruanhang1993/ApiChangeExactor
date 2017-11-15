@@ -19,6 +19,8 @@
 
 package com.github.gumtreediff.actions;
 
+import cn.edu.fudan.se.apiChangeExtractor.gumtreeParser.JGraphPanel;
+
 import com.github.gumtreediff.actions.model.*;
 import com.github.gumtreediff.tree.TreeContext;
 
@@ -27,6 +29,7 @@ import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -34,30 +37,35 @@ public class ActionClusterFinder {
 
     private TreeContext src;
 
-    private TreeContext dst;
+    @SuppressWarnings("unused")
+	private TreeContext dst;
 
-    private List<Action> actions;
+    @SuppressWarnings("unused")
+	private List<Action> actions;
 
     private DirectedGraph<Action, DefaultEdge> graph;
 
     private List<Set<Action>> clusters;
+    
+    public List<Action> startNodes = new ArrayList<>();
 
     public ActionClusterFinder(TreeContext src, TreeContext dst, List<Action> actions) {
         this.src = src;
         this.dst = dst;
         this.actions = actions;
+        startNodes.addAll(actions);
         graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         for (Action a: actions)
             graph.addVertex(a);
-
-
+        
         for (Action a1: actions) {
             for (Action a2: actions) {
                 if (a1 != a2) {
-                    if (embeddedInserts(a1, a2) || sameValueUpdates(a1, a2)
-                            || sameParentMoves(a1, a2) || embeddedDeletes(a1, a2))
-                        graph.addEdge(a1, a2);
+                    if (embeddedInserts(a1, a2) || sameValueUpdates(a1, a2) || sameParentMoves(a1, a2) || embeddedDeletes(a1, a2)){
+                    	graph.addEdge(a1, a2);
+                    	startNodes.remove(a1);
+                    }
                 }
             }
         }
@@ -65,9 +73,16 @@ public class ActionClusterFinder {
         ConnectivityInspector<Action, DefaultEdge> alg = new ConnectivityInspector<>(graph);
         clusters = alg.connectedSets();
     }
-
+    
+    public List<Action> getStartNodes() {
+        return startNodes;
+    }
     public List<Set<Action>> getClusters() {
         return clusters;
+    }
+    public void show(){
+    	JGraphPanel frame = new JGraphPanel(graph, clusters);
+    	frame.init();
     }
 
     private boolean embeddedInserts(Action a1, Action a2) {
@@ -75,12 +90,23 @@ public class ActionClusterFinder {
             return false;
         Insert i1 = (Insert) a1;
         Insert i2 = (Insert) a2;
-        if (i2.getParent().equals(i1.getNode()))
+        if (i1.getParent().equals(i2.getNode()))
             return true;
         else
             return false;
     }
-
+    
+    private boolean embeddedAdditions(Action a1, Action a2) {
+        if (!(a1 instanceof Addition && a2 instanceof Addition))
+            return false;
+        Addition i1 = (Addition) a1;
+        Addition i2 = (Addition) a2;
+        if (i1.getParent().equals(i2.getNode()))
+            return true;
+        else
+            return false;
+    }
+    
     private boolean embeddedDeletes(Action a1, Action a2) {
         if (!(a1 instanceof Delete && a2 instanceof Delete))
             return false;
