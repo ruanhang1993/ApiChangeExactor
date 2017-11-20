@@ -32,6 +32,7 @@ public class ActionUtil {
         for (Action a: actions) {
             if (a instanceof Insert) {
                 Insert action = ((Insert) a);
+                action.getNode().getChildren().clear();
                 action.getParent().insertChild(action.getNode(), action.getPosition());
             } else if (a instanceof Update) {
                 Update action = ((Update) a);
