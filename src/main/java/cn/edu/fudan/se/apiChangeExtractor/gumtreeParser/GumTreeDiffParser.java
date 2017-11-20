@@ -105,9 +105,9 @@ public class GumTreeDiffParser {
 			Insert insert = (Insert)a;
 			ITree insertNode = insert.getNode();
 			System.out.println(prettyString(dstTC,insertNode)+" to "+prettyString(dstTC,insertNode.getParent())+" at "+ insert.getPosition());
-//			System.out.println(prettyString(dstTC,insert.getParent()));//old
 			System.out.println(insert.toString());
-			System.out.println(insert.getParent()==insert.getNode().getParent());
+			System.out.println("----------------Insert.getParent(Old Tree)----------------------------");
+			System.out.println(prettyString(dstTC, insert.getParent()));//old
 		}
 		if(a instanceof Move){
 			System.out.print("Move>");
@@ -115,9 +115,10 @@ public class GumTreeDiffParser {
 			ITree moveNode = move.getNode();
 			System.out.println(prettyString(dstTC,moveNode)+" to "+prettyString(dstTC,move.getParent())+" at "+ move.getPosition());//old
 			System.out.println(move.toString());
+			System.out.println(move.getParent()==move.getNode().getParent());
 
-			System.out.println("----------------Move----------------------------");
-			System.out.println(prettyString(dstTC, move.getParent()));
+			System.out.println("----------------Move.getParent(New Tree)----------------------------");
+			System.out.println(prettyString(dstTC, move.getParent()));//new
 		}
 		if(a instanceof Update){
 			System.out.print("Update>");
@@ -125,10 +126,10 @@ public class GumTreeDiffParser {
 			ITree updateNode = update.getNode();
 			System.out.println("from "+updateNode.getLabel()+" to "+update.getValue());//old
 		}
-		System.out.println("----------------Node----------------------------");
+		System.out.println("----------------Action.getNode----------------------------");
 		System.out.println(prettyString(dstTC, a.getNode()));//move-old,update-old,insert-new,delete-old
 //		System.out.println(toTreeString(dstTC, a.getNode()));
-		System.out.println("-----------------Parent---------------------------");
+		System.out.println("-----------------Action.getNode.getParent---------------------------");
 		System.out.println(prettyString(dstTC, a.getNode().getParent()));//move-old,update-old,insert-new,delete-old
 //		System.out.println(toTreeString(dstTC, a.getNode().getParent()));
 		System.out.println("============================================");
@@ -161,8 +162,12 @@ public class GumTreeDiffParser {
 //		String file2 = "src/test/java/resources/DeleteFileCase2.java";
 //		String file1 = "src/test/java/resources/ClassChangeCase1.java";
 //		String file2 = "src/test/java/resources/ClassChangeCase2.java";
-		String file1 = "src/test/java/resources/InstanceChangeCase1.java";
-		String file2 = "src/test/java/resources/InstanceChangeCase2.java";
+//		String file1 = "src/test/java/resources/InstanceChangeCase1.java";
+//		String file2 = "src/test/java/resources/InstanceChangeCase2.java";
+//		String file1 = "src/test/java/resources/OldCase1.java";
+//		String file2 = "src/test/java/resources/NewCase1.java";
+		String file1 = "src/test/java/resources/Test1.java";
+		String file2 = "src/test/java/resources/Test2.java";
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
 		System.out.println("---------------------------------Old Tree------------------------------------");
