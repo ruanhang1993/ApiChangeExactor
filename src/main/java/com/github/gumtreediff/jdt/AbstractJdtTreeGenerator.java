@@ -22,9 +22,12 @@ package com.github.gumtreediff.jdt;
 
 import com.github.gumtreediff.gen.TreeGenerator;
 import com.github.gumtreediff.tree.TreeContext;
+
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +63,9 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
         parser.setCompilerOptions(pOptions);
         parser.setSource(readerToCharArray(r));
         AbstractJdtVisitor v = createVisitor();
-        parser.createAST(null).accept(v);
+        ASTNode temp = parser.createAST(null);
+        temp.accept(v);
+        v.getTreeContext().setCu((CompilationUnit)temp);
         return v.getTreeContext();
     }
 

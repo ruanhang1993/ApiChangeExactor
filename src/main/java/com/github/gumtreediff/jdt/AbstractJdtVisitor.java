@@ -46,7 +46,7 @@ public abstract class AbstractJdtVisitor extends ASTVisitor {
     protected void pushNode(ASTNode n, String label) {
         int type = n.getNodeType();
         String typeName = n.getClass().getSimpleName();
-        push(type, typeName, label, n.getStartPosition(), n.getLength());
+        push(type, typeName, label, n.getStartPosition(), n.getLength(), n);
     }
 
     protected void pushFakeNode(EntityType n, int startPosition, int length) {
@@ -54,7 +54,21 @@ public abstract class AbstractJdtVisitor extends ASTVisitor {
         String typeName = n.name();
         push(type, typeName, "", startPosition, length);
     }
+    
+    private void push(int type, String typeName, String label, int startPosition, int length,ASTNode node) {
+        ITree t = context.createTree(type, label, typeName, node);
+        t.setPos(startPosition);
+        t.setLength(length);
 
+        if (trees.isEmpty())
+            context.setRoot(t);
+        else {
+            ITree parent = trees.peek();
+            t.setParentAndUpdateChildren(parent);
+        }
+
+        trees.push(t);
+    }
     private void push(int type, String typeName, String label, int startPosition, int length) {
         ITree t = context.createTree(type, label, typeName);
         t.setPos(startPosition);

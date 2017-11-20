@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 public class Tree extends AbstractTree implements ITree {
 
     private int type;
@@ -38,6 +40,30 @@ public class Tree extends AbstractTree implements ITree {
 
     private AssociationMap metadata;
 
+    //add by rh
+    private ASTNode astNode;
+   
+    public Tree(int type, String label, ASTNode n) {
+        this.type = type;
+        this.label = (label == null) ? NO_LABEL : label.intern();
+        this.id = NO_ID;
+        this.depth = NO_VALUE;
+        this.hash = NO_VALUE;
+        this.height = NO_VALUE;
+        this.depth = NO_VALUE;
+        this.size = NO_VALUE;
+        this.pos = NO_VALUE;
+        this.length = NO_VALUE;
+        this.children = new ArrayList<>();
+        this.astNode = n;
+    }
+    public ASTNode getAstNode(){
+    	return astNode;
+    }
+    public void setAstNode(ASTNode astNode){
+    	this.astNode = astNode;
+    }
+    
     /**
      * Constructs a new node. If you need type labels corresponding to the integer
      * @see TreeContext#createTree(int, String, String)

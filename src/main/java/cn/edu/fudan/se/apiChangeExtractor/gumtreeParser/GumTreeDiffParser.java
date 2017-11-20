@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import com.github.gumtreediff.actions.ActionClusterFinder;
 import com.github.gumtreediff.actions.ActionGenerator;
 import com.github.gumtreediff.actions.model.Action;
@@ -18,6 +20,7 @@ import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.tree.TreeUtils;
 
@@ -136,7 +139,7 @@ public class GumTreeDiffParser {
 	}
 	
 	public String prettyString(TreeContext con, ITree node){
-		return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel();
+		return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")";
 	}
 	private String indent(ITree t) {
         StringBuilder b = new StringBuilder();
@@ -150,6 +153,15 @@ public class GumTreeDiffParser {
             b.append(indent(t) + prettyString(con, t) + "\n");
         return b.toString();
     }
+    
+    public int getStartLineNum(TreeContext con, ITree node){
+    	ASTNode n = ((Tree) node).getAstNode();
+		return con.getCu().getLineNumber(n.getStartPosition());
+	}
+    public int getEndLineNum(TreeContext con, ITree node){
+    	ASTNode n = ((Tree) node).getAstNode();
+		return con.getCu().getLineNumber(n.getStartPosition()+n.getLength()-1);
+	}
     
 	public static void main(String[] args) {
 //		String file1 = "src/test/java/resources/StringBuilderCase1.java";

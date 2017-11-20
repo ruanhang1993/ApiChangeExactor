@@ -29,6 +29,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+
 public class TreeContext {
 
     private Map<Integer, String> typeLabels = new HashMap<>();
@@ -38,8 +41,19 @@ public class TreeContext {
     private final MetadataSerializers serializers = new MetadataSerializers();
 
     private ITree root;
+    
+    //add by rh
+    private CompilationUnit cu;
+    
+    public CompilationUnit getCu() {
+		return cu;
+	}
 
-    @Override
+	public void setCu(CompilationUnit cu) {
+		this.cu = cu;
+	}
+
+	@Override
     public String toString() {
         return TreeIoUtils.toLisp(this).toString();
     }
@@ -86,6 +100,12 @@ public class TreeContext {
         return new Tree(type, label);
     }
 
+    //add by rh
+    public ITree createTree(int type, String label, String typeLabel, ASTNode node) {
+        registerTypeLabel(type, typeLabel);
+        return new Tree(type, label, node);
+    }
+    
     public ITree createTree(ITree... trees) {
         return new AbstractTree.FakeTree(trees);
     }

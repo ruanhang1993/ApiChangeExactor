@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 public class MyAstParser {
 	public static void main(String[] args){
 		MyAstParser parser = new MyAstParser();
-		CompilationUnit classCU = parser.parseFile("D:/ApiChangeExtractor.java");
+		CompilationUnit classCU = parser.parseFile("src/test/java/resources/Test2.java");
 		MyClassVisitor visitor = new MyClassVisitor();
 		classCU.accept(visitor);
 		for( Object i :classCU.imports()){
