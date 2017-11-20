@@ -108,9 +108,16 @@ public class MappingStore implements Iterable<Mapping> {
     public ITree getDst(ITree src) {
         return srcs.get(src);
     }
+    
 
     public ITree getSrc(ITree dst) {
         return dsts.get(dst);
+    }
+    public Map<ITree, ITree> getSrcMap(){
+    	return this.srcs;
+    }
+    public Map<ITree, ITree> getDstMap(){
+    	return this.dsts;
     }
 
     public boolean hasSrc(ITree src) {
