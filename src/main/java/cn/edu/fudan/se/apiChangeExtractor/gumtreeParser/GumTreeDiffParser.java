@@ -25,15 +25,15 @@ import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.tree.TreeUtils;
 
 public class GumTreeDiffParser {
-	String oldFile;
-	String newFile;
-	TreeContext srcTC;
-	TreeContext dstTC;
-	ITree src;
-	ITree dst;
-	List<Action> actions;
-	MappingStore mapping;
-	ActionClusterFinder finder;
+	public String oldFile;
+	public String newFile;
+	public TreeContext srcTC;
+	public TreeContext dstTC;
+	public ITree src;
+	public ITree dst;
+	public List<Action> actions;
+	public MappingStore mapping;
+	public ActionClusterFinder finder;
 	
 	public GumTreeDiffParser(String oldFile, String newFile){
 		this.oldFile = oldFile;
