@@ -106,16 +106,12 @@ public class Tree extends AbstractTree implements ITree {
 
     @Override
     public void insertChild(ITree t, int position) {
+    	//TODO buggy code
     	System.out.println(children.size()+":"+position);
-//    	children.add(position, t);
-        if(children.size()<position){
-        	List<ITree> temp = new ArrayList<>();
-        	temp.addAll(children);
-        	temp.add(t);
-        	children = temp;
-        }else{
-        	children.add(position, t);
-        }
+    	if(position>children.size()){
+    		position=children.size();
+    	}
+    	children.add(position, t);
         t.setParent(this);
     }
 
