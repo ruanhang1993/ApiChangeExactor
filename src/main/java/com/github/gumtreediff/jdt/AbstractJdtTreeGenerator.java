@@ -62,6 +62,7 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
         pOptions.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
         parser.setCompilerOptions(pOptions);
         parser.setSource(readerToCharArray(r));
+        parser.setResolveBindings(true);
         AbstractJdtVisitor v = createVisitor();
         ASTNode temp = parser.createAST(null);
         temp.accept(v);

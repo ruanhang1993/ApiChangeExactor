@@ -25,8 +25,8 @@ import com.github.gumtreediff.tree.TreeContext;
 import com.github.gumtreediff.tree.TreeUtils;
 
 public class GumTreeDiffParser {
-	String oldFile;
-	String newFile;
+	File oldFile;
+	File newFile;
 	TreeContext srcTC;
 	TreeContext dstTC;
 	ITree src;
@@ -35,7 +35,11 @@ public class GumTreeDiffParser {
 	MappingStore mapping;
 	ActionClusterFinder finder;
 	
-	public GumTreeDiffParser(String oldFile, String newFile){
+	public GumTreeDiffParser(String oldFileName, String newFileName){
+		this.oldFile = new File(oldFileName);
+		this.newFile = new File(newFileName);
+	}
+	public GumTreeDiffParser(File oldFile, File newFile){
 		this.oldFile = oldFile;
 		this.newFile = newFile;
 	}
@@ -44,9 +48,9 @@ public class GumTreeDiffParser {
 		Run.initGenerators();
 		try {
 			JdtTreeGenerator parser = new JdtTreeGenerator();
-			srcTC = parser.generateFromFile(new File(oldFile));
+			srcTC = parser.generateFromFile(oldFile);
 			src = srcTC.getRoot();
-			dstTC = parser.generateFromFile(new File(newFile));
+			dstTC = parser.generateFromFile(newFile);
 			dst = dstTC.getRoot();
 			Matcher m = Matchers.getInstance().getMatcher(src, dst); // retrieve the default matcher
 			m.match();
