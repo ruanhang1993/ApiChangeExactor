@@ -54,18 +54,18 @@ public class ApiChangeExtractor {
 	private static final Logger logger = LoggerFactory.getLogger(ApiChangeExtractor.class);
 	
 	private GitReader gitReader;
-	private ChangeExtractor changeExactor;
+//	private ChangeExtractor changeExactor;
 	private int repositoryId;
 	private ApichangeDao dao;
 	
 	public ApiChangeExtractor(String path, int repositoryId){
-		changeExactor = new ChangeExtractor();
+//		changeExactor = new ChangeExtractor();
 		gitReader = new GitReader(path);
 		this.repositoryId = repositoryId;
 		dao = new ApichangeDao();
 	}
 	public ApiChangeExtractor(Repository repository){
-		changeExactor = new ChangeExtractor();
+//		changeExactor = new ChangeExtractor();
 		gitReader = new GitReader(repository.getAddress());
 		this.repositoryId = repository.getRepositoryId();
 		dao = new ApichangeDao();
