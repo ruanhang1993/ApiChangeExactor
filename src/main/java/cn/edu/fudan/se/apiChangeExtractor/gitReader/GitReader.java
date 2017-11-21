@@ -105,6 +105,29 @@ public class GitReader {
 		return null;
 	}
 	
+	public List<ChangeFile> getChangeFilesId(RevCommit commit){
+    	List<ChangeFile> changeFiles= new ArrayList<ChangeFile>();
+		
+		AbstractTreeIterator newTree = prepareTreeParser(commit);
+		if(commit.getParentCount()==0) return changeFiles;
+    	AbstractTreeIterator oldTree = prepareTreeParser(commit.getParent(0));
+    	List<DiffEntry> diff= null;
+		try {
+			diff = git.diff().setOldTree(oldTree).setNewTree(newTree).call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+        //每一个diffEntry都是文件版本之间的变动差异
+		for (DiffEntry diffEntry : diff) {
+			//DiffEntry.ChangeType.MODIFY.toString().equals(diffEntry.getChangeType().toString())&&
+			if(DiffEntry.ChangeType.MODIFY.toString().equals(diffEntry.getChangeType().toString())&&diffEntry.getNewPath()!=null&&diffEntry.getNewPath().endsWith(".java")){
+				changeFiles.add(new ChangeFile(diffEntry.getChangeType().toString(), diffEntry.getOldPath(), diffEntry.getNewPath(), 
+	        			commit.getName(), (commit.getParents()[0]).getName(), diffEntry.getNewId().toObjectId(), diffEntry.getOldId().toObjectId()));
+			}
+		} 
+       return changeFiles;
+	}
+	
 	public List<ChangeFile> getChangeFiles(RevCommit commit){
     	List<ChangeFile> changeFiles= new ArrayList<ChangeFile>();
 		
