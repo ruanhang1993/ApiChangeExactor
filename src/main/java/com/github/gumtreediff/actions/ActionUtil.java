@@ -21,6 +21,7 @@
 package com.github.gumtreediff.actions;
 
 import com.github.gumtreediff.actions.model.*;
+import com.github.gumtreediff.tree.Tree;
 import com.github.gumtreediff.tree.TreeContext;
 
 import java.util.List;
@@ -32,6 +33,7 @@ public class ActionUtil {
         for (Action a: actions) {
             if (a instanceof Insert) {
                 Insert action = ((Insert) a);
+                action.getNode().getChildren().clear();
                 action.getParent().insertChild(action.getNode(), action.getPosition());
             } else if (a instanceof Update) {
                 Update action = ((Update) a);
