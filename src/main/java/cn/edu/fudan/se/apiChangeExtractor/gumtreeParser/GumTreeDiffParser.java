@@ -149,7 +149,7 @@ public class GumTreeDiffParser {
 		if("MethodInvocation".equals(con.getTypeLabel(node))){
 			JdtMethodCall temp = ((Tree)node).getMethodCall();
 			if(temp != null)
-				return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")"+"|\n"+temp.toString();
+				return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")"+"|\n"+temp.toString()+"|"+temp.isJdk();
 		}
 		return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")";
 	}

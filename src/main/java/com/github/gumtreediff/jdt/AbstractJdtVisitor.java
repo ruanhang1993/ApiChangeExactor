@@ -78,6 +78,7 @@ public abstract class AbstractJdtVisitor extends ASTVisitor {
                 for(int i = 0; i < list.length; i++){
                 	jdtBinding.addParameter(list[i].getQualifiedName());
                 }
+                jdtBinding.setJdk(isJdk(md.getExpression().resolveTypeBinding().getQualifiedName()));
                 ((Tree)t).setMethodCall(jdtBinding);
             }else{
             	if(mb==null)
@@ -117,5 +118,17 @@ public abstract class AbstractJdtVisitor extends ASTVisitor {
 
     protected void popNode() {
         trees.pop();
+    }
+    private boolean isJdk(String s){
+    	try {
+    		String temp = s;
+    		if(temp.contains("<")){
+    			temp = temp.split("<")[0];
+    		}
+			Class.forName(temp);
+			return true;
+		} catch (ClassNotFoundException e) {
+	    	return false;
+		}
     }
 }

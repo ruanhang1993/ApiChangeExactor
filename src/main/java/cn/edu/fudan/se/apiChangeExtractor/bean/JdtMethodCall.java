@@ -9,6 +9,7 @@ public class JdtMethodCall {
 	private String methodName;
 	private String returnType;
 	private String declaringClass;
+	private boolean isJdk;
 	private List<String> parameters;
 	
 	public JdtMethodCall(String invoker, String methodName, String returnType, String declaringClass){
@@ -20,6 +21,16 @@ public class JdtMethodCall {
 	}
 	
 	
+	public boolean isJdk() {
+		return isJdk;
+	}
+
+
+	public void setJdk(boolean isJdk) {
+		this.isJdk = isJdk;
+	}
+
+
 	public String getDeclaringClass() {
 		return declaringClass;
 	}
