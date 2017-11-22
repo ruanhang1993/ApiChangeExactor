@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import cn.edu.fudan.se.apiChangeExtractor.bean.JdtMethodCall;
+
 import com.github.gumtreediff.actions.ActionClusterFinder;
 import com.github.gumtreediff.actions.ActionGenerator;
 import com.github.gumtreediff.actions.model.Action;
@@ -144,6 +146,11 @@ public class GumTreeDiffParser {
 	}
 	
 	public String prettyString(TreeContext con, ITree node){
+		if("MethodInvocation".equals(con.getTypeLabel(node))){
+			JdtMethodCall temp = ((Tree)node).getMethodCall();
+			if(temp != null)
+				return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")"+"|\n"+temp.toString();
+		}
 		return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")";
 	}
 	private String indent(ITree t) {
@@ -187,11 +194,11 @@ public class GumTreeDiffParser {
 //		String file2 = "src/test/java/resources/Test2.java";
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
-		System.out.println("---------------------------------Old Tree------------------------------------");
-		System.out.println(diff.getOldTreeString());
-		System.out.println("---------------------------------New Tree------------------------------------");
-		System.out.println(diff.getNewTreeString());
-		System.out.println("---------------------------------------------------------------------");
+//		System.out.println("---------------------------------Old Tree------------------------------------");
+//		System.out.println(diff.getOldTreeString());
+//		System.out.println("---------------------------------New Tree------------------------------------");
+//		System.out.println(diff.getNewTreeString());
+//		System.out.println("---------------------------------------------------------------------");
 		System.out.println("---------------------------------Old Tree------------------------------------");
 		System.out.println(diff.getPrettyOldTreeString());
 		System.out.println("---------------------------------New Tree------------------------------------");

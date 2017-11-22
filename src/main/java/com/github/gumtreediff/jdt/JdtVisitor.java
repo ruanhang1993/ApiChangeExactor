@@ -21,7 +21,6 @@
 
 package com.github.gumtreediff.jdt;
 
-
 import org.eclipse.jdt.core.dom.*;
 
 public class JdtVisitor  extends AbstractJdtVisitor {
@@ -53,15 +52,36 @@ public class JdtVisitor  extends AbstractJdtVisitor {
     }
 //    @Override
 //    public boolean visit(MethodInvocation md) {
-//        IMethodBinding mb = md.resolveMethodBinding();
 //        System.out.println("******************************************************************************************");
-//        System.out.println(mb.getName());
-//        System.out.println(mb.getReturnType().toString()); 
-//        System.out.println(mb.getDeclaringClass().getQualifiedName());
+//        IMethodBinding mb = md.resolveMethodBinding();
+//        //如果binding有效，且通过对象或类名调用
+//        if(mb!=null&&md.getExpression()!=null){
+//        	System.out.println(md.getExpression().resolveTypeBinding().getQualifiedName());
+//            System.out.println(mb.getName());
+//            System.out.println(mb.getReturnType().getQualifiedName()); 
+//            System.out.println(mb.getDeclaringClass().getQualifiedName());
+//            ITypeBinding[] list = mb.getParameterTypes();
+//            for(int i = 0; i < list.length; i++){
+//            	System.out.println("->"+list[i].getQualifiedName());
+//            }
+//        }else{
+//        	if(mb==null)
+//        		System.out.println(md.getName()+" is null.");
+//        	if(md.getExpression()==null)
+//        		System.out.println(md.getName()+" is local method.");
+//        }
 //        System.out.println("******************************************************************************************");
 //        return true;
 //    }
-    
+//  @Override
+//  public boolean visit(FieldDeclaration md) {
+//      System.out.println("******************************************************************************************");
+//      System.out.println(md.toString());
+//      System.out.println(md.getType().resolveBinding().getQualifiedName());
+//      System.out.println(((VariableDeclarationFragment)md.fragments().get(0)).getName().toString());
+//      System.out.println("******************************************************************************************");
+//      return true;
+//  }
     @Override
     public boolean visit(TagElement e) {
         return true;

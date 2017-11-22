@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import cn.edu.fudan.se.apiChangeExtractor.bean.JdtMethodCall;
+
 public class Tree extends AbstractTree implements ITree {
 
     private int type;
@@ -42,8 +44,9 @@ public class Tree extends AbstractTree implements ITree {
 
     //add by rh
     private ASTNode astNode;
-   
-    public Tree(int type, String label, ASTNode n) {
+    private JdtMethodCall methodCall = null;
+    
+	public Tree(int type, String label, ASTNode n) {
         this.type = type;
         this.label = (label == null) ? NO_LABEL : label.intern();
         this.id = NO_ID;
@@ -220,4 +223,11 @@ public class Tree extends AbstractTree implements ITree {
             return new EmptyEntryIterator();
         return metadata.iterator();
     }
+   
+    public JdtMethodCall getMethodCall() {
+		return methodCall;
+	}
+	public void setMethodCall(JdtMethodCall methodCall) {
+		this.methodCall = methodCall;
+	}
 }
