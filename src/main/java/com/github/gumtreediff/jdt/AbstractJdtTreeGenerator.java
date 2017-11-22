@@ -35,7 +35,11 @@ import java.io.Reader;
 import java.util.Map;
 
 public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
-
+	private String fileName;
+	public AbstractJdtTreeGenerator(){}
+	public AbstractJdtTreeGenerator(String fileName){
+		this.fileName = fileName;
+	}
     private static char[] readerToCharArray(Reader r) throws IOException {
         StringBuilder fileData = new StringBuilder();
         try (BufferedReader br = new BufferedReader(r)) {
@@ -61,14 +65,23 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
         pOptions.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
         pOptions.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
         parser.setCompilerOptions(pOptions);
-        parser.setSource(readerToCharArray(r));
+        parser.setEnvironment(null, null, null, true);
+        parser.setUnitName(getUnit(fileName));//需要与代码文件的名称一致
         parser.setResolveBindings(true);
+        parser.setBindingsRecovery(true);
+        parser.setSource(readerToCharArray(r));
         AbstractJdtVisitor v = createVisitor();
         ASTNode temp = parser.createAST(null);
         temp.accept(v);
         v.getTreeContext().setCu((CompilationUnit)temp);
         return v.getTreeContext();
     }
-
+	
+	public String getUnit(String s){
+		String[] temp = s.split("/");
+		String t = temp[temp.length-1];
+		return t.substring(0,t.length()-5);
+	}
+	
     protected abstract AbstractJdtVisitor createVisitor();
 }

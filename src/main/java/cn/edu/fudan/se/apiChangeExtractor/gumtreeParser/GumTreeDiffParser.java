@@ -47,10 +47,11 @@ public class GumTreeDiffParser {
 	public void init(){
 		Run.initGenerators();
 		try {
-			JdtTreeGenerator parser = new JdtTreeGenerator();
-			srcTC = parser.generateFromFile(oldFile);
+			JdtTreeGenerator parser1 = new JdtTreeGenerator(oldFile.getPath());
+			srcTC = parser1.generateFromFile(oldFile);
 			src = srcTC.getRoot();
-			dstTC = parser.generateFromFile(newFile);
+			JdtTreeGenerator parser2 = new JdtTreeGenerator(newFile.getPath());
+			dstTC = parser2.generateFromFile(newFile);
 			dst = dstTC.getRoot();
 			Matcher m = Matchers.getInstance().getMatcher(src, dst); // retrieve the default matcher
 			m.match();
@@ -172,8 +173,8 @@ public class GumTreeDiffParser {
 //		String file2 = "src/test/java/resources/StringBuilderCase2.java";
 //		String file1 = "src/test/java/resources/StringEquals1.java";
 //		String file2 = "src/test/java/resources/StringEquals2.java";
-//		String file1 = "src/test/java/resources/CloseCase1.java";
-//		String file2 = "src/test/java/resources/CloseCase2.java";
+		String file1 = "src/test/java/resources/CloseCase1.java";
+		String file2 = "src/test/java/resources/CloseCase2.java";
 //		String file1 = "src/test/java/resources/DeleteFileCase1.java";
 //		String file2 = "src/test/java/resources/DeleteFileCase2.java";
 //		String file1 = "src/test/java/resources/ClassChangeCase1.java";
@@ -182,8 +183,8 @@ public class GumTreeDiffParser {
 //		String file2 = "src/test/java/resources/InstanceChangeCase2.java";
 //		String file1 = "src/test/java/resources/OldCase1.java";
 //		String file2 = "src/test/java/resources/NewCase1.java";
-		String file1 = "src/test/java/resources/Test1.java";
-		String file2 = "src/test/java/resources/Test2.java";
+//		String file1 = "src/test/java/resources/Test1.java";
+//		String file2 = "src/test/java/resources/Test2.java";
 		GumTreeDiffParser diff = new GumTreeDiffParser(file1,file2);
 		diff.init();
 		System.out.println("---------------------------------Old Tree------------------------------------");

@@ -51,7 +51,17 @@ public class JdtVisitor  extends AbstractJdtVisitor {
 
         return "";
     }
-
+//    @Override
+//    public boolean visit(MethodInvocation md) {
+//        IMethodBinding mb = md.resolveMethodBinding();
+//        System.out.println("******************************************************************************************");
+//        System.out.println(mb.getName());
+//        System.out.println(mb.getReturnType().toString()); 
+//        System.out.println(mb.getDeclaringClass().getQualifiedName());
+//        System.out.println("******************************************************************************************");
+//        return true;
+//    }
+    
     @Override
     public boolean visit(TagElement e) {
         return true;
