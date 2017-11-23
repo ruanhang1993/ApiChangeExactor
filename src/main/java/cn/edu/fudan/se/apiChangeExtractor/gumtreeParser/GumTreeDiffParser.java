@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 
 import cn.edu.fudan.se.apiChangeExtractor.bean.JdtMethodCall;
 
@@ -147,7 +150,7 @@ public class GumTreeDiffParser {
 	
 	public String prettyString(TreeContext con, ITree node){
 		if("MethodInvocation".equals(con.getTypeLabel(node))){
-			JdtMethodCall temp = ((Tree)node).getMethodCall();
+			JdtMethodCall temp = getJdkMethodCall((MethodInvocation)((Tree)node).getAstNode());
 			if(temp != null)
 				return node.getId()+". "+con.getTypeLabel(node)+":"+node.getLabel()+"("+getStartLineNum(con,node)+"-"+getEndLineNum(con,node)+")"+"|\n"+temp.toString()+"|"+temp.isJdk();
 		}
@@ -175,6 +178,38 @@ public class GumTreeDiffParser {
 		return con.getCu().getLineNumber(n.getStartPosition()+n.getLength()-1);
 	}
     
+    public JdtMethodCall getJdkMethodCall(MethodInvocation md){
+    	IMethodBinding mb = md.resolveMethodBinding();
+        //如果binding有效，且通过对象或类名调用
+        if(mb!=null&&md.getExpression()!=null){
+        	JdtMethodCall jdtBinding = new JdtMethodCall(md.getExpression().resolveTypeBinding().getQualifiedName(),
+        			mb.getName(), mb.getReturnType().getQualifiedName(), mb.getDeclaringClass().getQualifiedName());
+            ITypeBinding[] list = mb.getParameterTypes();
+            for(int i = 0; i < list.length; i++){
+            	jdtBinding.addParameter(list[i].getQualifiedName());
+            }
+            jdtBinding.setJdk(isJdk(md.getExpression().resolveTypeBinding().getQualifiedName()));
+            return jdtBinding;
+        }else{
+        	if(mb==null)
+        		System.out.println(md.getName()+" is null.");
+        	if(md.getExpression()==null)
+        		System.out.println(md.getName()+" is local method.");
+        	return null;
+        }
+    }
+    private boolean isJdk(String s){
+    	try {
+    		String temp = s;
+    		if(temp.contains("<")){
+    			temp = temp.split("<")[0];
+    		}
+			Class.forName(temp);
+			return true;
+		} catch (ClassNotFoundException e) {
+	    	return false;
+		}
+    }
 	public static void main(String[] args) {
 //		String file1 = "src/test/java/resources/StringBuilderCase1.java";
 //		String file2 = "src/test/java/resources/StringBuilderCase2.java";

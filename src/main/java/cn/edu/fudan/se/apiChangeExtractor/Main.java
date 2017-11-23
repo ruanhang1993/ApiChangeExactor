@@ -16,7 +16,7 @@ public class Main {
 	private RepositoryDao dao = new RepositoryDao();
 	public static void main(String[] args) {
 		Main main = new Main();
-		main.extractRepositories(main.getTestData());
+		main.extractRepositoriesByGumTree(main.getTestData());
 	}
 	
 	public List<Repository> getData(){
@@ -30,15 +30,15 @@ public class Main {
 //		String repositoryPath2 = "D:/github/ChangeExtractor";
 //		String repositoryPath3 = "D:/github/SEDataExtractor";
 //		String repositoryPath4 = "D:/javaee/LykProject";
-//		String repositoryPath5 = "D:/github/checkstyle";
-		String repositoryPath6 = "D:/github/spring-framework";
+		String repositoryPath5 = "D:/github/checkstyle";
+//		String repositoryPath6 = "D:/github/spring-framework";
 //		String repositoryPath7 = "D:/github/h2o-3";
 //		Repository repository1 = new Repository(-1, repositoryPath1);
 //		Repository repository2 = new Repository(-2, repositoryPath2);
 //		Repository repository3 = new Repository(-3, repositoryPath3);
 //		Repository repository4 = new Repository(-4, repositoryPath4);
-//		Repository repository5 = new Repository(-5, repositoryPath5);
-		Repository repository6 = new Repository(-6, repositoryPath6);
+		Repository repository5 = new Repository(-5, repositoryPath5);
+//		Repository repository6 = new Repository(-6, repositoryPath6);
 //		Repository repository7 = new Repository(-7, repositoryPath7);
 		
 		List<Repository> list = new ArrayList<>(); 
@@ -46,8 +46,8 @@ public class Main {
 //		list.add(repository2);
 //		list.add(repository3);
 //		list.add(repository4);
-//		list.add(repository5);
-		list.add(repository6);
+		list.add(repository5);
+//		list.add(repository6);
 //		list.add(repository7);
 		return list;
 	}
@@ -64,5 +64,12 @@ public class Main {
 			ApiChangeExtractor a = new ApiChangeExtractor(r);
 			a.extractApiChangeByDiff();
 		}
+	}
+	public void extractRepositoriesByGumTree(List<Repository> list){
+		for(Repository r : list){
+			GumTreeParseTask task = new GumTreeParseTask(r);
+			service.submit(task);
+		}
+		service.shutdown();
 	}
 }

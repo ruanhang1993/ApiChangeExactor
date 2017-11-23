@@ -18,7 +18,7 @@ import cn.edu.fudan.se.apiChangeExtractor.mybatis.dao.ApichangeDao;
 import cn.edu.fudan.se.apiChangeExtractor.util.FileUtils;
 
 public class GumTreeExtractor {
-	private static final Logger logger = LoggerFactory.getLogger(GumTreeExtractor.class);
+//	private static final Logger logger = LoggerFactory.getLogger(GumTreeExtractor.class);
 	
 	private GitReader gitReader;
 	private int repositoryId;
@@ -55,6 +55,7 @@ public class GumTreeExtractor {
 				String randomString = UUID.randomUUID().toString();
 				File newFile = FileUtils.writeBytesToFile(newContent, tempDirPath, randomString + ".v1");
 				File oldFile = FileUtils.writeBytesToFile(oldContent, tempDirPath, randomString + ".v2");
+				if(newFile.length()/1048576>1) continue;
 				GumTreeDiffParser diff = new GumTreeDiffParser(oldFile, newFile);
 				diff.init();
 				List<Action> actions = diff.getActions();
