@@ -66,6 +66,7 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
         pOptions.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
         parser.setCompilerOptions(pOptions);
         parser.setEnvironment(null, null, null, true);
+        System.out.println(getUnit(fileName));
         parser.setUnitName(getUnit(fileName));//需要与代码文件的名称一致
         parser.setResolveBindings(true);
         parser.setBindingsRecovery(true);

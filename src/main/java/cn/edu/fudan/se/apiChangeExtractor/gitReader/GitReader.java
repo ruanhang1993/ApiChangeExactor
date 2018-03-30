@@ -59,8 +59,8 @@ public class GitReader {
 			revWalk = new RevWalk(repository);
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.info("repositoryPath: "+repositoryPath+" Error");
-			logger.info(e.getMessage());
+			logger.warn("repositoryPath: "+repositoryPath+" Error");
+			logger.warn(e.getMessage());
 		}
 	}
 	
